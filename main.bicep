@@ -1,6 +1,14 @@
 param deploymentLocation string = 'eastus'
 param adxName string = 'adxclusterpatmon'
 param eventHubName string = 'eventhubpatmon'
+param iotCentralName string = 'iotcentralpatmon'
+
+module iotCentralApp 'iotcentral.bicep' = {
+  name: iotCentralName
+  params: {
+    iotCentralName: iotCentralName
+  }
+}
 
 module adxCluster './adx.bicep' = {
   name: adxName
@@ -37,3 +45,4 @@ resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dat
     adxCluster
   ]
 }
+

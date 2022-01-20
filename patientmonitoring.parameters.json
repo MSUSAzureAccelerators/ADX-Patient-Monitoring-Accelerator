@@ -10,6 +10,9 @@
       },
       "eventHubName": {
         "value": "eventhubpatmon"
+      },
+      "iotCentralName": {
+        "value": "iotcentralpatmon"
       }
     }
 }
