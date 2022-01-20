@@ -1,22 +1,39 @@
-param adxName string
-param location string = resourceGroup().location
-param adxSKU string
+param deploymentLocation string = 'eastus'
+param adxName string = 'adxclusterpatientmonitoring'
+param eventHubName string = 'eventhubpatientmonitoring'
 
-resource adx 'Microsoft.Kusto/clusters@2021-08-27' = {
+module adxCluster './adx.bicep' = {
   name: adxName
-  location: location
-  sku: {
-    name: adxSKU
-    tier: 'Standard'
-    capacity: 2
+  params: {
+    adxName: adxName
+    location: deploymentLocation
+    adxSKU: 'Standard_D11_v2'
   }
-  identity: {
-    type: 'SystemAssigned'
-  }
-
-  resource adxDatabase 'databases@2021-08-27' = {
-    kind: 'ReadWrite'
-    name: 'PatientMonitoring'
-   }
 }
 
+module eventhub 'eventhub.bicep' = {
+  name: eventHubName
+  params: {
+    eventHubName: eventHubName
+    location: deploymentLocation
+    eventHubSKU: 'Standard'
+  }
+}
+
+resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dataConnections@2021-08-27' = {
+  name: '${adxCluster.name}/${eventhub.name}/dbconnect'
+  kind: 'EventHub'
+  location: deploymentLocation
+  properties: {
+    eventHubResourceId: '${eventhub.outputs.eventhubClusterId}/eventhubs/PatientMonitoring'
+    consumerGroup: '$Default'
+    tableName: 'TelemetryRaw'
+    mappingRuleName: 'TelemetryRaw_mapping'
+    dataFormat: 'JSON'
+    compression: 'None'
+    managedIdentityResourceId: adxCluster.outputs.adxClusterId
+  }
+  dependsOn: [
+    adxCluster
+  ]
+}
