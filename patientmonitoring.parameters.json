@@ -6,10 +6,10 @@
         "value": "eastus"
       },
       "adxName": {
-        "value": "adxclusterpatientmonitoring"
+        "value": "adxclusterpatmon"
       },
       "eventHubName": {
-        "value": "eventhubpatientmonitoring"
+        "value": "eventhubpatmon"
       }
     }
 }

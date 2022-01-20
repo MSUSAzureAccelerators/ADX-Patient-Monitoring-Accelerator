@@ -1,6 +1,6 @@
 param deploymentLocation string = 'eastus'
-param adxName string = 'adxclusterpatientmonitoring'
-param eventHubName string = 'eventhubpatientmonitoring'
+param adxName string = 'adxclusterpatmon'
+param eventHubName string = 'eventhubpatmon'
 
 module adxCluster './adx.bicep' = {
   name: adxName
