@@ -1,0 +1,120 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1124.51302",
+      "templateHash": "12426541460114657437"
+    }
+  },
+  "parameters": {
+    "adxName": {
+      "type": "string",
+      "defaultValue": "[format('Demo{0}', uniqueString(resourceGroup().id))]"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.EventHub/namespaces/eventhubs",
+      "apiVersion": "2021-11-01",
+      "name": "[format('{0}/{1}', format('{0}ns', parameters('adxName')), 'PatientMonitoring')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces', format('{0}ns', parameters('adxName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Kusto/clusters/databases/scripts",
+      "apiVersion": "2021-08-27",
+      "name": "[format('{0}/{1}/{2}', parameters('adxName'), 'PatientMonitoring', 'ConfigDB')]",
+      "properties": {
+        "forceUpdateTag": "Test2",
+        "scriptUrl": "https://patientmonitoringsa.blob.core.windows.net/script/configDB.kql",
+        "scriptUrlSasToken": "sp=r&st=2022-01-19T19:44:47Z&se=2025-01-20T03:44:47Z&spr=https&sv=2020-08-04&sr=b&sig=kFSN5jRC9r3GNe9WHclIDMbXP%2Bcx3pvJyhGaLUyFJXk%3D"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Kusto/clusters', parameters('adxName'))]",
+        "[resourceId('Microsoft.Kusto/clusters/databases', parameters('adxName'), 'PatientMonitoring')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Kusto/clusters/databases/dataConnections",
+      "apiVersion": "2021-08-27",
+      "name": "[format('{0}/{1}/{2}', parameters('adxName'), 'PatientMonitoring', 'iotdata')]",
+      "kind": "EventHub",
+      "location": "[parameters('location')]",
+      "properties": {
+        "eventHubResourceId": "[format('{0}/eventhubs/PatientMonitoring', resourceId('Microsoft.EventHub/namespaces', format('{0}ns', parameters('adxName'))))]",
+        "consumerGroup": "$Default",
+        "tableName": "TelemetryRaw",
+        "mappingRuleName": "TelemetryRaw_mapping",
+        "dataFormat": "JSON",
+        "compression": "None",
+        "managedIdentityResourceId": "[resourceId('Microsoft.Kusto/clusters', parameters('adxName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Kusto/clusters', parameters('adxName'))]",
+        "[resourceId('Microsoft.Kusto/clusters/databases', parameters('adxName'), 'PatientMonitoring')]",
+        "[resourceId('Microsoft.Kusto/clusters/databases/scripts', parameters('adxName'), 'PatientMonitoring', 'ConfigDB')]",
+        "[resourceId('Microsoft.EventHub/namespaces', format('{0}ns', parameters('adxName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Kusto/clusters/databases",
+      "apiVersion": "2021-08-27",
+      "name": "[format('{0}/{1}', parameters('adxName'), 'PatientMonitoring')]",
+      "kind": "ReadWrite",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Kusto/clusters', parameters('adxName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.EventHub/namespaces",
+      "apiVersion": "2021-11-01",
+      "name": "[format('{0}ns', parameters('adxName'))]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Standard",
+        "capacity": 1
+      }
+    },
+    {
+      "type": "Microsoft.Kusto/clusters",
+      "apiVersion": "2021-08-27",
+      "name": "[parameters('adxName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_D11_v2",
+        "tier": "Standard",
+        "capacity": 2
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces', format('{0}ns', parameters('adxName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-08-01-preview",
+      "scope": "[format('Microsoft.EventHub/namespaces/{0}', format('{0}ns', parameters('adxName')))]",
+      "name": "[guid(parameters('adxName'))]",
+      "properties": {
+        "principalId": "[reference(resourceId('Microsoft.Kusto/clusters', parameters('adxName')), '2021-08-27', 'full').identity.principalId]",
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'a638d3c7-ab3a-418d-83e6-5f17a39d4fde')]",
+        "principalType": "ServicePrincipal"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Kusto/clusters', parameters('adxName'))]",
+        "[resourceId('Microsoft.EventHub/namespaces', format('{0}ns', parameters('adxName')))]"
+      ]
+    }
+  ]
+}
