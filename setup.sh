@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Generate a unique suffix for the deployment and Resource Group
-let randomNum=$RANDOM*$RANDOM
+randomNum=$(($RANDOM * $RANDOM))
 
 # Create parent resurce group
 rgName=ADXConnectedDevices$randomNum
