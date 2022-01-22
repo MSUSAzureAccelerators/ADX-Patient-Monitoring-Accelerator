@@ -8,11 +8,17 @@
       "adxName": {
         "value": "adxclusterpatmon"
       },
+      "adxSKU": {
+        "value": "Standard_D11_v2"
+      },
       "eventHubName": {
         "value": "eventhubpatmon"
       },
       "iotCentralName": {
         "value": "iotcentralpatmon"
+      },
+      "digitalTwinlName": {
+        "value": "digitaltwinpatmon"
       }
     }
 }

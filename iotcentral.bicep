@@ -1,9 +1,10 @@
 
 param iotCentralName string = 'iotcentralpatmon'
+param location string = resourceGroup().location
 
 resource myIotCentralApp 'Microsoft.IoTCentral/iotApps@2021-06-01' = {
   name: iotCentralName
-  location: resourceGroup().location
+  location: location
   sku: {
     name: 'ST1'
    }

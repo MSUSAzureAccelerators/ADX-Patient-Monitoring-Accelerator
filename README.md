@@ -1,9 +1,25 @@
 # PatientMonitoringDemo
 
+Login to Azure Cloud Shell
 
-Deployment instructions
+# Get the latest version of the repository
+
+git clone -b refactor-to-modules https://github.com/bwatts64/PatientMonitoringDemo.git
+
+## Deployment instructions
 
 az group create --name ADXConnectedDevices --location "East US"
 
 az deployment group create --name ADXConnectedDevicesDeployment --resource-group ADXConnectedDevices --template-file main.bicep --parameters @patientmonitoring.parameters.json
+
+TEST:
+az deployment group create --name ADXConnectedDevicesDeployment --resource-group ADXConnectedDevices --template-file adx.bicep 
+
  
+
+## Deploying devices
+az iot central device create --device-id abc1234 --app-id 1ca22cf5-838f-4134-ba74-4c2fa6e76d20 --template dtmi:j71gm4wvkse:q2hnw2dwt --simulated
+
+
+## Clean up resources
+az group delete --name ADXConnectedDevices

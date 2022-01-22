@@ -1,12 +1,15 @@
 param deploymentLocation string = 'eastus'
 param adxName string = 'adxclusterpatmon'
+param adxSKU string = 'Standard_D11_v2'
 param eventHubName string = 'eventhubpatmon'
 param iotCentralName string = 'iotcentralpatmon'
+param digitalTwinlName string = 'digitaltwinpatmon'
 
 module iotCentralApp 'iotcentral.bicep' = {
   name: iotCentralName
   params: {
     iotCentralName: iotCentralName
+    location: deploymentLocation
   }
 }
 
@@ -15,7 +18,7 @@ module adxCluster './adx.bicep' = {
   params: {
     adxName: adxName
     location: deploymentLocation
-    adxSKU: 'Standard_D11_v2'
+    adxSKU: adxSKU
   }
 }
 
@@ -25,6 +28,14 @@ module eventhub 'eventhub.bicep' = {
     eventHubName: eventHubName
     location: deploymentLocation
     eventHubSKU: 'Standard'
+  }
+}
+
+module digitalTwin 'digitaltwin.bicep' = {
+  name: digitalTwinlName
+  params: {
+    digitalTwinName: digitalTwinlName
+    location: deploymentLocation
   }
 }
 
@@ -43,6 +54,7 @@ resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dat
   }
   dependsOn: [
     adxCluster
+    eventhub
   ]
 }
 
