@@ -58,3 +58,4 @@ resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dat
   ]
 }
 
+output iotCentralName string = iotCentralName
