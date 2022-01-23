@@ -4,11 +4,12 @@ param adxSKU string = 'Standard_D11_v2'
 param eventHubName string = 'eventhubpatmon'
 param iotCentralName string = 'iotcentralpatmon'
 param digitalTwinlName string = 'digitaltwinpatmon'
+param deploymentSuffix string
 
 module iotCentralApp 'iotcentral.bicep' = {
   name: iotCentralName
   params: {
-    iotCentralName: iotCentralName
+    iotCentralName: '${iotCentralName}${deploymentSuffix}'
     location: deploymentLocation
   }
 }
@@ -16,7 +17,7 @@ module iotCentralApp 'iotcentral.bicep' = {
 module adxCluster './adx.bicep' = {
   name: adxName
   params: {
-    adxName: adxName
+    adxName: '${adxName}${deploymentSuffix}'
     location: deploymentLocation
     adxSKU: adxSKU
   }
@@ -25,7 +26,7 @@ module adxCluster './adx.bicep' = {
 module eventhub 'eventhub.bicep' = {
   name: eventHubName
   params: {
-    eventHubName: eventHubName
+    eventHubName: '${eventHubName}${deploymentSuffix}'
     location: deploymentLocation
     eventHubSKU: 'Standard'
   }
@@ -34,7 +35,7 @@ module eventhub 'eventhub.bicep' = {
 module digitalTwin 'digitaltwin.bicep' = {
   name: digitalTwinlName
   params: {
-    digitalTwinName: digitalTwinlName
+    digitalTwinName: '${digitalTwinlName}${deploymentSuffix}'
     location: deploymentLocation
   }
 }
