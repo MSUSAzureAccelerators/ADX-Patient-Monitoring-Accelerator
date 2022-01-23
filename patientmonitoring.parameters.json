@@ -19,9 +19,6 @@
       },
       "digitalTwinlName": {
         "value": "digitaltwinpm"
-      },
-      "deploymentSuffix": {
-        "value": "01234"
       }
     }
 }
