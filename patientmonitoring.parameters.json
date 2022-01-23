@@ -21,10 +21,10 @@
         "value": "digitaltwinpm"
       },
       "smartKneeBraceDevices": {
-        "value": "10"
+        "value": 10
       },
       "vitalPatchDevices": {
-        "value": "10"
+        "value": 10
       }
     }
 }

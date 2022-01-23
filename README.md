@@ -65,5 +65,12 @@ az iot central export create --app-id {appid} --export-id {exportid} --enabled {
 ]'
 
 
+# Add Digital Twin resources from IoT Central
+
+
 ## Clean up resources
 az group delete --name ADXConnectedDevices
+
+
+EROR: No IoT Central application found with name "iotcentralpm6350" in current subscription
+az iot central app show -n iotcentralpm6350 --query  applicationId

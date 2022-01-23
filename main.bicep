@@ -5,10 +5,10 @@ param eventHubName string = 'eventhubpatmon'
 param iotCentralName string = 'iotcentralpatmon'
 param digitalTwinlName string = 'digitaltwinpatmon'
 param deploymentSuffix string
-param smartKneeBraceDevices string
-param vitalPatchDevices string
+param smartKneeBraceDevices int
+param vitalPatchDevices int
 
-module iotCentralApp 'iotcentral.bicep' = {
+module iotCentralApp './modules/iotcentral.bicep' = {
   name: iotCentralName
   params: {
     iotCentralName: '${iotCentralName}${deploymentSuffix}'
@@ -16,7 +16,7 @@ module iotCentralApp 'iotcentral.bicep' = {
   }
 }
 
-module adxCluster './adx.bicep' = {
+module adxCluster './modules/adx.bicep' = {
   name: adxName
   params: {
     adxName: '${adxName}${deploymentSuffix}'
@@ -25,7 +25,7 @@ module adxCluster './adx.bicep' = {
   }
 }
 
-module eventhub 'eventhub.bicep' = {
+module eventhub './modules/eventhub.bicep' = {
   name: eventHubName
   params: {
     eventHubName: '${eventHubName}${deploymentSuffix}'
@@ -34,7 +34,7 @@ module eventhub 'eventhub.bicep' = {
   }
 }
 
-module digitalTwin 'digitaltwin.bicep' = {
+module digitalTwin './modules/digitaltwin.bicep' = {
   name: digitalTwinlName
   params: {
     digitalTwinName: '${digitalTwinlName}${deploymentSuffix}'
@@ -62,5 +62,5 @@ resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dat
 }
 
 output iotCentralName string = '${iotCentralName}${deploymentSuffix}'
-output smartKneeBraceDeviceNumber string = smartKneeBraceDevices
-output vitalPatchDevicesNumber string = vitalPatchDevices
+output smartKneeBraceDeviceNumber int = smartKneeBraceDevices
+output vitalPatchDevicesNumber int = vitalPatchDevices

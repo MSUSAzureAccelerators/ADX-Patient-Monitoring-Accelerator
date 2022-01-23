@@ -10,12 +10,15 @@ randomNum=$RANDOM
 # Create parent resurce group
 rgName=ADXConnectedDevices$randomNum
 echo "1. Creating resource group: $rgName"
-az group create --name $rgName --location "East US" --only-show-errors
+az group create --name $rgName --location "East US" --only-show-errors --output none
 
 # Create all additional services using main Bicep template
 deploymentName=ADXConnectedDevicesDeployment$randomNum
 echo "2. Initiating Deployment: $deploymentName"
 az deployment group create -n $deploymentName -g $rgName --template-file main.bicep --parameters deploymentSuffix=$randomNum @patientmonitoring.parameters.json --only-show-errors
+
+# Sleep for 3 minutes to make sure subsequent calls return the correct data
+sleep 3m
 
 # Get IoT Central app ID:
 iotCentralName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.iotCentralName.value)
