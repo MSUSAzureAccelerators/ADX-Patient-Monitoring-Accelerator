@@ -19,10 +19,12 @@ az deployment group create -n $deploymentName -g $rgName --template-file main.bi
 iotCentralName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.iotCentralName.value)
 iotCentralAppID=$(az iot central app show -n $iotCentralName --query  applicationId)
 
-# Deploy three simulated devices
-for d in {1..3}
+# Deploy three simulated devices -- COmplete this section
+# numDevType1=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.iotCentralName.value)
+numDevType1='5'
+for (( c=1; c<=$numDevType1; c++ ))
 do
     deviceId=$(cat /proc/sys/kernel/random/uuid)
-    az iot central device create --device-id $deviceId$d --app-id $iotCentralAppID --template dtmi:j71gm4wvkse:q2hnw2dwt --simulated
+    az iot central device create --device-id $deviceId$c --app-id $iotCentralAppID --template dtmi:j71gm4wvkse:q2hnw2dwt --simulated
 done
  

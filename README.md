@@ -8,16 +8,13 @@ git clone -b refactor-to-modules https://github.com/bwatts64/PatientMonitoringDe
 
 ## Deployment instructions
 
-az group create --name ADXConnectedDevices2 --location "East US"
+bash ./setup.sh
 
-az deployment group create --name ADXConnectedDevicesDeployment --resource-group ADXConnectedDevices2 --template-file main.bicep --parameters @patientmonitoring.parameters.json
-
-# Get IoT Central app ID:
-az deployment group show -g ADXConnectedDevices2 -n ADXConnectedDevicesDeployment --query properties.outputs.iotCentralAppID.value
-
-## Deploying devices
-az iot central device create --device-id abc1234 --app-id 1ca22cf5-838f-4134-ba74-4c2fa6e76d20 --template dtmi:j71gm4wvkse:q2hnw2dwt --simulated
-
+# TODO:
+- Can I remove the deploymentSUffix from the parameter file? That will be ideal!!!
+- Add number of devices of each type to the parameter file, use it as Output, and later use it in the for loop
+    that way there is only one place where parameters are added
+    Keep in mind the data type
 
 # Create IoT Central Export destination:
 # https://docs.microsoft.com/en-us/cli/azure/iot/central/export/destination?view=azure-cli-latest#az-iot-central-export-destination-create

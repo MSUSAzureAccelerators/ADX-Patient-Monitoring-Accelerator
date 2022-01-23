@@ -41,7 +41,7 @@ module digitalTwin 'digitaltwin.bicep' = {
 }
 
 resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dataConnections@2021-08-27' = {
-  name: '${adxCluster.name}/PatientMonitoring/eventhubconnection'
+  name: '${adxName}${deploymentSuffix}/PatientMonitoring/eventhubconnection'
   kind: 'EventHub'
   location: deploymentLocation
   properties: {
