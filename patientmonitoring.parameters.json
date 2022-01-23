@@ -6,19 +6,19 @@
         "value": "eastus"
       },
       "adxName": {
-        "value": "adxclusterpatmon"
+        "value": "adxpm"
       },
       "adxSKU": {
         "value": "Standard_D11_v2"
       },
       "eventHubName": {
-        "value": "eventhubpatmon"
+        "value": "eventhubpm"
       },
       "iotCentralName": {
-        "value": "iotcentralpatmon001"
+        "value": "iotcentralpm"
       },
       "digitalTwinlName": {
-        "value": "digitaltwinpatmon"
+        "value": "digitaltwinpm"
       },
       "deploymentSuffix": {
         "value": "01234"
