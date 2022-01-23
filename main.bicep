@@ -5,6 +5,8 @@ param eventHubName string = 'eventhubpatmon'
 param iotCentralName string = 'iotcentralpatmon'
 param digitalTwinlName string = 'digitaltwinpatmon'
 param deploymentSuffix string
+param smartKneeBraceDevices string
+param vitalPatchDevices string
 
 module iotCentralApp 'iotcentral.bicep' = {
   name: iotCentralName
@@ -59,4 +61,6 @@ resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dat
   ]
 }
 
-output iotCentralName string = iotCentralName
+output iotCentralName string = '${iotCentralName}${deploymentSuffix}'
+output smartKneeBraceDeviceNumber string = smartKneeBraceDevices
+output vitalPatchDevicesNumber string = vitalPatchDevices

@@ -2,6 +2,10 @@
 
 Login to Azure Cloud Shell
 
+# Make sure yoou login to Azure
+
+az login
+
 # Get the latest version of the repository
 
 git clone -b refactor-to-modules https://github.com/bwatts64/PatientMonitoringDemo.git
@@ -11,10 +15,7 @@ git clone -b refactor-to-modules https://github.com/bwatts64/PatientMonitoringDe
 bash ./setup.sh
 
 # TODO:
-- Can I remove the deploymentSUffix from the parameter file? That will be ideal!!!
-- Add number of devices of each type to the parameter file, use it as Output, and later use it in the for loop
-    that way there is only one place where parameters are added
-    Keep in mind the data type
+
 
 # Create IoT Central Export destination:
 # https://docs.microsoft.com/en-us/cli/azure/iot/central/export/destination?view=azure-cli-latest#az-iot-central-export-destination-create
