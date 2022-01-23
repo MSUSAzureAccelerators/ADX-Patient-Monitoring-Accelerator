@@ -13,7 +13,7 @@ az group create --name $rgName --location "East US"
 
 # Create all additional services using main Bicep template
 deploymentName=ADXConnectedDevicesDeployment$randomNum
-az deployment group create -n $deploymentName -g $rgName --template-file main.bicep -deploymentSuffix $randomNum --parameters @patientmonitoring.parameters.json
+az deployment group create -n $deploymentName -g $rgName --template-file main.bicep --parameters deploymentSuffix=$randomNum @patientmonitoring.parameters.json
 
 # Get IoT Central app ID:
 iotCentralName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.iotCentralName.value)
