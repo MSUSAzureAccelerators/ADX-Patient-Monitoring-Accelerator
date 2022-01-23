@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Install required eztensions
+az extension add --name azure-iot
+
 # Generate a unique suffix for the deployment and Resource Group
 randomNum=$RANDOM
 
