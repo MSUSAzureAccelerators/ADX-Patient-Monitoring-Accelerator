@@ -6,16 +6,21 @@ Login to Azure Cloud Shell
 
 az login
 
+# Optionally, if you have more than one subscription, select the appropriate one
+az account set --subscription "<your-subscription>"
+
 # Get the latest version of the repository
 
 git clone -b refactor-to-modules https://github.com/bwatts64/PatientMonitoringDemo.git
 
 ## Deployment instructions
 
+cd PatientMonitoringDemo
 bash ./setup.sh
 
 # TODO:
 
+az iot central app show -n iotcentralpm15461 --query  applicationId
 
 # Create IoT Central Export destination:
 # https://docs.microsoft.com/en-us/cli/azure/iot/central/export/destination?view=azure-cli-latest#az-iot-central-export-destination-create
@@ -72,5 +77,3 @@ az iot central export create --app-id {appid} --export-id {exportid} --enabled {
 az group delete --name ADXConnectedDevices
 
 
-EROR: No IoT Central application found with name "iotcentralpm6350" in current subscription
-az iot central app show -n iotcentralpm6350 --query  applicationId
