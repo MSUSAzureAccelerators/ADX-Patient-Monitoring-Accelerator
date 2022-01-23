@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Generate a unique suffix for the deployment and Resource Group
-randomNum=$(($RANDOM * $RANDOM))
+randomNum=$RANDOM
 
 # Create parent resurce group
 rgName=ADXConnectedDevices$randomNum
@@ -18,7 +18,7 @@ iotCentralAppID=$(az iot central app show -n $iotCentralName --query  applicatio
 # Deploy three simulated devices
 for d in {1..3}
 do
-    deviceId=$(uuidgen)
+    deviceId=$(cat /proc/sys/kernel/random/uuid)
     az iot central device create --device-id $deviceId$d --app-id $iotCentralAppID --template dtmi:j71gm4wvkse:q2hnw2dwt --simulated
 done
  
