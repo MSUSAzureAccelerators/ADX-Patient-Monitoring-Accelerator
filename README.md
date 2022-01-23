@@ -1,23 +1,34 @@
-# PatientMonitoringDemo
+# ADX Connected Devices - Patient Monitoring Demo
 
-Login to Azure Cloud Shell
+![alt tag](./assets/AutomationPresentation.gif)
 
-# Make sure yoou login to Azure
+This example shows how to use ADX to monitor a patient's vitals and knee brace readings
 
-az login
-
-# Optionally, if you have more than one subscription, select the appropriate one
-az account set --subscription "<your-subscription>"
-
-# Get the latest version of the repository
-
-git clone -b refactor-to-modules https://github.com/bwatts64/PatientMonitoringDemo.git
 
 ## Deployment instructions
 
+From the Azure CLoud Shell :
+1. Login to Azure Cloud Shell
+```bash
+az login
+```
+2. Optionally, if you have more than one subscription, select the appropriate one:
+```bash
+az account set --subscription "<your-subscription>"
+```
+3. Get the latest version of the repository
+```bash
+git clone -b refactor-to-modules https://github.com/bwatts64/PatientMonitoringDemo.git
+```
+4. Create all necessary resources
+```bash
 cd PatientMonitoringDemo
-bash ./setup.sh
-
+. ./setup.sh
+```
+5. Complete reosurce configuration
+```bash
+. ./configure.sh
+```
 # TODO:
 
 az iot central app show -n iotcentralpm15461 --query  applicationId

@@ -18,3 +18,5 @@ echo "2. Initiating Deployment: $deploymentName"
 az deployment group create -n $deploymentName -g $rgName --template-file main.bicep --parameters deploymentSuffix=$randomNum @patientmonitoring.parameters.json --only-show-errors
 
 echo "3. Setup completed. Proceed to Configure"
+export rgName
+export deploymentName
