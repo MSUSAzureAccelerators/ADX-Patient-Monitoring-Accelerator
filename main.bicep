@@ -7,12 +7,14 @@ param digitalTwinlName string = 'digitaltwinpatmon'
 param deploymentSuffix string
 param smartKneeBraceDevices int
 param vitalPatchDevices int
+param principalId string
 
 module iotCentralApp './modules/iotcentral.bicep' = {
   name: iotCentralName
   params: {
     iotCentralName: '${iotCentralName}${deploymentSuffix}'
     location: deploymentLocation
+    principalId: principalId
   }
 }
 

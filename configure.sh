@@ -5,7 +5,7 @@ iotCentralName=$(az deployment group show -n $deploymentName -g $rgName --query 
 iotCentralAppID=$(az iot central app show -n $iotCentralName -g $rgName --query  applicationId --output tsv)
 
 # Get IoT Central Token 
-az account get-access-token --resource https://apps.azureiotcentral.com --only-show-errors
+az account get-access-token --resource https://apps.azureiotcentral.com --only-show-errors --output none
 
 # Deploy Smart Knee Brace imulated devices
 smartKneeBraceDevices=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.smartKneeBraceDeviceNumber.value --output tsv)
@@ -34,6 +34,4 @@ az iot central export destination create --app-id $iotCentralAppID --dest-id 'ev
 echo "6. Creating IoT Central App Export on IoT Central: $iotCentralName ($iotCentralAppID)"
 az iot central export create --app-id $iotCentralAppID --export-id 'iotEventHubExport' --display-name 'iotEventHubExport' --source 'telemetry' --destinations '[{"id": "eventHubExport"}]' --output none
 
-# Grant "Azure Digital Twins Data Owner" role to user running script
-
-# Complete Azure Digital Twins Envirtonment setup 
+# Complete Azure Digital Twins Envirtonment setup
