@@ -15,7 +15,7 @@ az group create --name $rgName --location "East US" --only-show-errors --output 
 # Create all additional services using main Bicep template
 deploymentName=ADXConnectedDevicesDeployment$randomNum
 echo "2. Initiating Deployment: $deploymentName"
-az deployment group create -n $deploymentName -g $rgName --template-file main.bicep --parameters deploymentSuffix=$randomNum @patientmonitoring.parameters.json --only-show-errors
+az deployment group create -n $deploymentName -g $rgName --template-file main.bicep --parameters deploymentSuffix=$randomNum @patientmonitoring.parameters.json --only-show-errors --output none
 
 echo "3. Setup completed. Proceed to Configure"
 export rgName

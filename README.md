@@ -31,29 +31,10 @@ cd PatientMonitoringDemo
 ```
 # TODO:
 
-az iot central app show -n iotcentralpm15461 --query  applicationId
+Be aware of this error when running Configure.sh:
+https://github.com/Azure/azure-cli/issues/11749#issuecomment-570975762
+Just do az login and retry
 
-# Create IoT Central Export destination:
-# https://docs.microsoft.com/en-us/cli/azure/iot/central/export/destination?view=azure-cli-latest#az-iot-central-export-destination-create
-az iot central export destination create --app-id
-                                         --dest-id
-                                         --display-name
-                                         --type {blobstorage@v1, dataexplorer@v1, eventhubs@v1, servicebusqueue@v1, servicebustopic@v1, webhook@v1}
-                                         [--api-version {1.1-preview}]
-                                         [--au]
-                                         [--central-api-uri]
-                                         [--cluster-url]
-                                         [--database]
-                                         [--header]
-                                         [--table]
-                                         [--token]
-                                         [--url]
-
-# Event Hub example:
-az iot central export destination create --app-id {appid} --dest-id {destintionid} --type eventhubs@v1 --name {displayname} --authorization '{
-  "type": "connectionString",
-  "connectionString": "Endpoint=sb://[hubName].servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=*****;EntityPath=entityPath1"
-}'
 
 # Create IoT Central App export:
 # https://docs.microsoft.com/en-us/cli/azure/iot/central/export?view=azure-cli-latest#az-iot-central-export-create
@@ -88,3 +69,7 @@ az iot central export create --app-id {appid} --export-id {exportid} --enabled {
 az group delete --name ADXConnectedDevices
 
 
+Todo from Brad:
+- We need to automate the export job from IoT Central to the EventHub that was created
+- We need to grant the 'Azure Digital Twins Data Owner' to the person running this. I had to add myself to login to ADT
+- We need to automate the ADT environment

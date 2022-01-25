@@ -64,3 +64,9 @@ resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dat
 output iotCentralName string = '${iotCentralName}${deploymentSuffix}'
 output smartKneeBraceDeviceNumber int = smartKneeBraceDevices
 output vitalPatchDevicesNumber int = vitalPatchDevices
+output eventHubConnectionString string = eventhub.outputs.eventHubConnectionString
+output eventHubAuthRuleName string = eventhub.outputs.eventHubAuthRuleName
+output eventHubName string = eventhub.outputs.eventHubName
+output eventhubClusterId string = eventhub.outputs.eventhubClusterId
+output eventhubNamespace string = eventhub.outputs.eventhubNamespace
+
