@@ -44,6 +44,22 @@ module digitalTwin './modules/digitaltwin.bicep' = {
   }
 }
 
+@description('This is the built-in Azure Event Hubs Data receiver role. See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles')
+resource eventHubsDataReceiverRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  name: 'a638d3c7-ab3a-418d-83e6-5f17a39d4fde'
+}
+
+// Grant Azure Event Hubs Data receiver role to ADX
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(resourceGroup().id, principalId, eventHubsDataReceiverRoleDefinition.id)
+  properties: {
+    roleDefinitionId: eventHubsDataReceiverRoleDefinition.id
+    principalId: adxCluster.outputs.adxClusterId
+  }
+}
+
+// Add Azure Event Hubs data connection to ADX database
 resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dataConnections@2021-08-27' = {
   name: '${adxName}${deploymentSuffix}/PatientMonitoring/eventhubconnection'
   kind: 'EventHub'
