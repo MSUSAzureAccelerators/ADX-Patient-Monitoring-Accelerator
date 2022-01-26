@@ -71,7 +71,7 @@ resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dat
     mappingRuleName: 'TelemetryRaw_mapping'
     dataFormat: 'JSON'
     compression: 'None'
-    managedIdentityResourceId: adxCluster.outputs.adxClusterId
+    managedIdentityResourceId: adxCluster.outputs.adxClusterIdentity
   }
   dependsOn: [
     adxCluster

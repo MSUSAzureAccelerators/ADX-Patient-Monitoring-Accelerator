@@ -37,4 +37,5 @@ resource adxDBConfig 'Microsoft.Kusto/clusters/databases/scripts@2021-08-27' = {
 }
 
 output adxClusterId string = adxCluster.id
+output adxClusterIdentity string = adxCluster.identity.principalId
 
