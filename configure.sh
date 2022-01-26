@@ -10,8 +10,8 @@ az dt model create -n $dtName --from-directory ./dtconfig
 az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Facility;1" --twin-id Arkham
 az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Department;1" --twin-id Rehabilitation
 az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Department;1" --twin-id Psychology
-az dt twin relationship create -n $dtName --relationship-id 'contains' --relationship 'facilitycontainsdepartment' --source 'Arkham' --target 'Rehabilitation'
-az dt twin relationship create -n $dtName --relationship-id 'contains' --relationship 'facilitycontainsdepartment' --source 'Arkham' --target 'Psychology'
+az dt twin relationship create -n $dtName --relationship-id 'containsRehab' --relationship 'facilitycontainsdepartment' --source 'Arkham' --target 'Rehabilitation'
+az dt twin relationship create -n $dtName --relationship-id 'containsPsychology' --relationship 'facilitycontainsdepartment' --source 'Arkham' --target 'Psychology'
 
 # Setup array to utilize when assiging devices to departments and patients
 departments=('Rehabilitation' 'Psychology')
@@ -40,12 +40,13 @@ do
 	department=${departments[0]}
 	patient=${rehapPatients[c%3]}
     else
-	department=${test[1]}
+	department=${departments[1]}
 	patient=${psychPatients[c%3]}
     fi    
 	az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:KneeBrace;1" --twin-id $deviceId --properties "{'PatientId': '${patient}'}" --only-show-errors --output none
+	echo "   Device $c with id:$deviceId created for patient $patient and linked to $department department"
 	az dt twin relationship create -n $dtName --relationship-id "owns${deviceId}" --relationship 'departmentownsdevice' --source $department --target $deviceId --only-show-errors --output none
-	echo "   Device #$c with id:$deviceId created for patient $patient and linked to $department department"
+	
 done
  
 # DeployVitals Patch Simulated devices
@@ -60,11 +61,11 @@ do
 	department=${departments[0]}
 	patient=${rehapPatients[c%3]}
     else
-	department=${test[1]}
+	department=${departments[1]}
 	patient=${psychPatients[c%3]}
     fi 
 	az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:VirtualPatch;1" --twin-id $deviceId --properties "{'PatientId': '${patient}'}"
-	az dt twin relationship create -n $dtName --relationship-id "owns${deviceId}" --relationship 'departmentownsdevice' --source $department --target $deviceId
+	az dt twin relationship create -n $dtName --relationship-id "owns${deviceId}" --relationship 'departmentownsdevice' --source $department --target $deviceId --only-show-errors --output none
 	echo "   Device #$c with id:$deviceId created for patient $patient and linked to $department department"
 done
 
