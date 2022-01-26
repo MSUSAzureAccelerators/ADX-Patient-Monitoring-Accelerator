@@ -35,6 +35,7 @@ for (( c=1; c<=$smartKneeBraceDevices; c++ ))
 do
     deviceId=$(cat /proc/sys/kernel/random/uuid)
     az iot central device create --device-id $deviceId --app-id $iotCentralAppID --template dtmi:j71gm4wvkse:q2hnw2dwt --simulated --only-show-errors --output none
+
     if ((c%2)); then
 	department=${departments[0]}
 	patient=${rehapPatients[c%3]}
@@ -54,6 +55,7 @@ for (( c=1; c<=$vitalPatchDevices; c++ ))
 do
     deviceId=$(cat /proc/sys/kernel/random/uuid)
     az iot central device create --device-id $deviceId --app-id $iotCentralAppID --template dtmi:hpzy1kfcbt2:umua7dplmbd --simulated --only-show-errors --output none
+
     if ((c%2)); then
 	department=${departments[0]}
 	patient=${rehapPatients[c%3]}
