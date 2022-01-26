@@ -34,7 +34,6 @@ resource eventHubNamespaceName_eventHubName_ListenSend 'Microsoft.EventHub/names
   }
 }
 
-
 var eventHubConnectionString = listKeys(eventHubNamespaceName_eventHubName_ListenSend.id, eventHubNamespaceName_eventHubName_ListenSend.apiVersion).primaryConnectionString
 output eventHubConnectionString string = eventHubConnectionString
 output eventHubAuthRuleName string = eventHubAuthRuleName
