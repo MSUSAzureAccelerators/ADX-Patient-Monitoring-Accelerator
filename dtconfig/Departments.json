@@ -1,0 +1,20 @@
+{
+  "@id": "dtmi:PatientMonitoring:Department;1",
+  "@type": "Interface",
+  "displayName": "Department",
+  "contents": [
+	{
+      "@type": "Relationship",
+      "name": "departmentownsdevice",
+      "displayName": "Department Owns Device",
+      "properties": [
+		{
+		  "@type": "Property",
+		  "name": "Name",
+		  "schema": "string"
+		}
+	  ]
+    }
+  ],
+  "@context": "dtmi:dtdl:context;2"
+}

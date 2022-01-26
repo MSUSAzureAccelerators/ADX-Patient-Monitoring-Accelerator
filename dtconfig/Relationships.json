@@ -1,0 +1,6 @@
+{
+  "$relationshipId": "ArkhamAsylumcontainsRehabilitation",
+  "$sourceId": "ArkhamAsylum",
+  "$targetId": "Rehabilitation",
+  "$relationshipName": "facilitycontainsdepartment"
+}
