@@ -55,7 +55,7 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-prev
   name: guid(resourceGroup().id, principalId, eventHubsDataReceiverRoleDefinition.id)
   properties: {
     roleDefinitionId: eventHubsDataReceiverRoleDefinition.id
-    principalId: adxCluster.outputs.adxClusterId
+    principalId: adxCluster.outputs.adxClusterIdentity
   }
 }
 
@@ -71,7 +71,7 @@ resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dat
     mappingRuleName: 'TelemetryRaw_mapping'
     dataFormat: 'JSON'
     compression: 'None'
-    managedIdentityResourceId: adxCluster.outputs.adxClusterIdentity
+    managedIdentityResourceId: adxCluster.outputs.adxClusterId
   }
   dependsOn: [
     adxCluster
