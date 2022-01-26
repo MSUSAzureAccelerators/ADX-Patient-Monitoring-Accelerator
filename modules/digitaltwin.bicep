@@ -27,6 +27,5 @@ resource dtroleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-pr
     roleDefinitionId: digitalTwintDataOwnerRoleDefinition.id
     principalId: principalId
   }
-  scope: digitaltwin
 }
 
