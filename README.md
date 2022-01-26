@@ -36,15 +36,5 @@ https://github.com/Azure/azure-cli/issues/11749#issuecomment-570975762
 Just do az login and retry
 
 
-
-# Add Digital Twin resources from IoT Central
-
-
 ## Clean up resources
 az group delete --name ADXConnectedDevices
-
-
-Todo from Brad:
-- We need to automate the export job from IoT Central to the EventHub that was created
-- We need to grant the 'Azure Digital Twins Data Owner' to the person running this. I had to add myself to login to ADT
-- We need to automate the ADT environment

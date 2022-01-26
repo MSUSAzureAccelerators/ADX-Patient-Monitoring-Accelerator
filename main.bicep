@@ -95,4 +95,5 @@ output eventHubAuthRuleName string = eventhub.outputs.eventHubAuthRuleName
 output eventHubName string = eventhub.outputs.eventHubName
 output eventhubClusterId string = eventhub.outputs.eventhubClusterId
 output eventhubNamespace string = eventhub.outputs.eventhubNamespace
+output digitalTwinName string = digitalTwin.outputs.digitalTwinName
 
