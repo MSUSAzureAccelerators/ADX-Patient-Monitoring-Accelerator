@@ -8,13 +8,13 @@ az extension update --name azure-iot --only-show-errors
 randomNum=$RANDOM
 
 # Create parent resurce group
-echo "1. Creating resource group: $rgName"
 rgName=ADXConnectedDevices$randomNum
+echo "1. Creating resource group: $rgName"
 az group create --name $rgName --location "East US" --only-show-errors --output none
 
 # Create all additional services using main Bicep template
-echo "2. Initiating Deployment: $deploymentName"
 deploymentName=ADXConnectedDevicesDeployment$randomNum
+echo "2. Initiating Deployment: $deploymentName"
 principalId=$(az ad signed-in-user show --query objectId -o tsv)
 az deployment group create -n $deploymentName -g $rgName --template-file main.bicep --parameters deploymentSuffix=$randomNum principalId=$principalId @patientmonitoring.parameters.json --only-show-errors --output none
 
