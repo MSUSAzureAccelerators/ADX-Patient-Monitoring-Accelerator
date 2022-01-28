@@ -107,6 +107,5 @@ output eventhubNamespace string = eventhub.outputs.eventhubNamespace
 output digitalTwinName string = digitalTwin.outputs.digitalTwinName
 output digitalTwinHostName string = digitalTwin.outputs.digitalTwinHostName
 output saName string = storageAccount.outputs.saName
-output saKey string = storageAccount.outputs.saKey
 output adxName string = adxCluster.outputs.adxName
 

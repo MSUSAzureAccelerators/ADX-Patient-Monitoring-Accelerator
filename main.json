@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "10220309264630318365"
+      "templateHash": "3833981794104889894"
     }
   },
   "parameters": {
@@ -108,7 +108,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1124.51302",
-              "templateHash": "6103067456732596288"
+              "templateHash": "11522686780858277909"
             }
           },
           "parameters": {
@@ -145,10 +145,6 @@
             "saName": {
               "type": "string",
               "value": "[parameters('saname')]"
-            },
-            "saKey": {
-              "type": "string",
-              "value": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', parameters('saname')), '2021-06-01')[0]]"
             }
           }
         }
@@ -551,10 +547,6 @@
     "saName": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}{1}', parameters('saName'), parameters('deploymentSuffix'))), '2020-10-01').outputs.saName.value]"
-    },
-    "saKey": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}{1}', parameters('saName'), parameters('deploymentSuffix'))), '2020-10-01').outputs.saKey.value]"
     },
     "adxName": {
       "type": "string",

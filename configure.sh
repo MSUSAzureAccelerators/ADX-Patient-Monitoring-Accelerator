@@ -8,7 +8,7 @@ echo "1. Starting configuration for deployment $deploymentName"
 dtName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.digitalTwinName.value --output tsv)
 dtHostName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.digitalTwinHostName.value --output tsv)
 saName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.saName.value --output tsv)
-saKey=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.saKey.value --output tsv)
+saKey=$(az storage account keys list --account-name $saName --query [0].value -o tsv)
 adxName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxName.value --output tsv)
 
 # Modify kql script

@@ -19,4 +19,3 @@ resource container 'Microsoft.Storage/storageAccounts/blobServices/containers@20
 }
 
 output saName string = storageaccount.name
-output saKey string = listkeys(storageaccount.id, storageaccount.apiVersion)[0]
