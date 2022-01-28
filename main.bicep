@@ -4,10 +4,19 @@ param adxSKU string = 'Standard_D11_v2'
 param eventHubName string = 'eventhubpatmon'
 param iotCentralName string = 'iotcentralpatmon'
 param digitalTwinlName string = 'digitaltwinpatmon'
+param saName string = 'patientmonitoringsa'
 param deploymentSuffix string
 param smartKneeBraceDevices int
 param vitalPatchDevices int
 param principalId string
+
+module storageAccount './modules/storage.bicep' = {
+  name: '${saName}${deploymentSuffix}'
+  params: {
+   saname: '${saName}${deploymentSuffix}'
+   location: deploymentLocation
+  }
+}
 
 module iotCentralApp './modules/iotcentral.bicep' = {
   name: iotCentralName
@@ -96,4 +105,6 @@ output eventHubName string = eventhub.outputs.eventHubName
 output eventhubClusterId string = eventhub.outputs.eventhubClusterId
 output eventhubNamespace string = eventhub.outputs.eventhubNamespace
 output digitalTwinName string = digitalTwin.outputs.digitalTwinName
+output saName string = storageAccount.outputs.saName
+output saKey string = storageAccount.outputs.saKey
 
