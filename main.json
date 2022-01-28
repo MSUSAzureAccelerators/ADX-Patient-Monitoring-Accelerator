@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "3833981794104889894"
+      "templateHash": "16285601311629232718"
     }
   },
   "parameters": {
@@ -62,26 +62,6 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', parameters('adxName'))]"
-      ]
-    },
-    {
-      "type": "Microsoft.Kusto/clusters/databases/dataConnections",
-      "apiVersion": "2021-08-27",
-      "name": "[format('{0}{1}/PatientMonitoring/eventhubconnection', parameters('adxName'), parameters('deploymentSuffix'))]",
-      "kind": "EventHub",
-      "location": "[parameters('deploymentLocation')]",
-      "properties": {
-        "eventHubResourceId": "[format('{0}/eventhubs/PatientMonitoring', reference(resourceId('Microsoft.Resources/deployments', parameters('eventHubName')), '2020-10-01').outputs.eventhubClusterId.value)]",
-        "consumerGroup": "$Default",
-        "tableName": "TelemetryRaw",
-        "mappingRuleName": "TelemetryRaw_mapping",
-        "dataFormat": "JSON",
-        "compression": "None",
-        "managedIdentityResourceId": "[reference(resourceId('Microsoft.Resources/deployments', parameters('adxName')), '2020-10-01').outputs.adxClusterId.value]"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', parameters('adxName'))]",
-        "[resourceId('Microsoft.Resources/deployments', parameters('eventHubName'))]"
       ]
     },
     {
@@ -551,6 +531,14 @@
     "adxName": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('adxName')), '2020-10-01').outputs.adxName.value]"
+    },
+    "adxClusterId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('adxName')), '2020-10-01').outputs.adxClusterId.value]"
+    },
+    "location": {
+      "type": "string",
+      "value": "[parameters('deploymentLocation')]"
     }
   }
 }

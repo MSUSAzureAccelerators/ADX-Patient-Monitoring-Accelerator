@@ -10,6 +10,9 @@ dtHostName=$(az deployment group show -n $deploymentName -g $rgName --query prop
 saName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.saName.value --output tsv)
 saKey=$(az storage account keys list --account-name $saName --query [0].value -o tsv)
 adxName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxName.value --output tsv)
+adxResoureId=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxClusterId.value --output tsv)
+location=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.location.value --output tsv)
+eventHubResourceId="$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.location.value --output tsv)/eventhubs/PatientMonitoring"
 
 # Modify kql script
 echo "2. Modifying KQL script"
@@ -20,7 +23,8 @@ az storage blob upload -f config/configDB.kql -c adxscript -n configDB.kql --acc
 echo "3. Running script to configure Azure Data Explorer"
 blobURI="https://$saName.blob.core.windows.net/adxscript/configDB.kql"
 blobSAS=$(az storage blob generate-sas --account-name $saName --container-name adxscript --name configDB.kql --permissions acdrw --expiry $tomorrow --auth-mode login --as-user)
-az kusto script create --cluster-name $adxName --database-name PatientMonitoring --force-update-tag "config1" --script-url $blobURI --script-url-sas-token $blobSAS --resource-group ADXConnectedDevices13516 --name 'configDB' --only-show-errors --output none
+az kusto script create --cluster-name $adxName --database-name PatientMonitoring --force-update-tag "config1" --script-url $blobURI --script-url-sas-token $blobSAS --resource-group $rgName --name 'configDB' --only-show-errors --output none
+az kusto data-connection event-hub create --cluster-name $adxName --name "PatientMonitoring" --database-name "PatientMonitoring" --location $location --consumer-group '$Default' --event-hub-resource-id $eventHubResourceId --managed-identity-resource-id $adxResoureId --data-format 'JSON' --table-name 'TelemetryRaw' --mapping-rule-name 'TelemetryRaw_mapping' --compression 'None' --resource-group $rgName
 
 # Create all the models from folder in git repo
 echo "4. Creating model for Azure Digital Twins $dtName"

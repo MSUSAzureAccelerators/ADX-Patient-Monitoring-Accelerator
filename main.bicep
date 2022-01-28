@@ -76,25 +76,6 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-prev
   }
 }
 
-// Add Azure Event Hubs data connection to ADX database
-resource adxNamePatientMonitoringiotdata 'Microsoft.Kusto/clusters/databases/dataConnections@2021-08-27' = {
-  name: '${adxName}${deploymentSuffix}/PatientMonitoring/eventhubconnection'
-  kind: 'EventHub'
-  location: deploymentLocation
-  properties: {
-    eventHubResourceId: '${eventhub.outputs.eventhubClusterId}/eventhubs/PatientMonitoring'
-    consumerGroup: '$Default'
-    tableName: 'TelemetryRaw'
-    mappingRuleName: 'TelemetryRaw_mapping'
-    dataFormat: 'JSON'
-    compression: 'None'
-    managedIdentityResourceId: adxCluster.outputs.adxClusterId
-  }
-  dependsOn: [
-    adxCluster
-    eventhub
-  ]
-}
 
 output iotCentralName string = '${iotCentralName}${deploymentSuffix}'
 output smartKneeBraceDeviceNumber int = smartKneeBraceDevices
@@ -108,4 +89,6 @@ output digitalTwinName string = digitalTwin.outputs.digitalTwinName
 output digitalTwinHostName string = digitalTwin.outputs.digitalTwinHostName
 output saName string = storageAccount.outputs.saName
 output adxName string = adxCluster.outputs.adxName
+output adxClusterId string = adxCluster.outputs.adxClusterId
+output location string = deploymentLocation
 
