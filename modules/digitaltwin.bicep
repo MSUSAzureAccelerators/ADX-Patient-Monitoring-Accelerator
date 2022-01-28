@@ -30,3 +30,4 @@ resource dtroleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-pr
 }
 
 output digitalTwinName string = digitaltwin.name
+output digitalTwinHostName string = digitaltwin.properties.hostName

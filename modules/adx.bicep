@@ -26,16 +26,7 @@ resource adxDb 'Microsoft.Kusto/clusters/databases@2021-08-27' = {
   }
 }
 
-resource adxDBConfig 'Microsoft.Kusto/clusters/databases/scripts@2021-08-27' = {
-  name: 'ConfigDB'
-  parent: adxDb
-  properties: {
-    forceUpdateTag: 'Test2'
-    scriptUrl: 'https://patientmonitoringsa.blob.core.windows.net/script/configDB.kql'
-    scriptUrlSasToken: 'sp=r&st=2022-01-19T19:44:47Z&se=2025-01-20T03:44:47Z&spr=https&sv=2020-08-04&sr=b&sig=kFSN5jRC9r3GNe9WHclIDMbXP%2Bcx3pvJyhGaLUyFJXk%3D'
-  }
-}
-
 output adxClusterId string = adxCluster.id
 output adxClusterIdentity string = adxCluster.identity.principalId
+output adxName string = adxCluster.name
 

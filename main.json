@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1124.51302",
-      "templateHash": "2760157551983079142"
+      "templateHash": "10220309264630318365"
     }
   },
   "parameters": {
@@ -255,7 +255,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1124.51302",
-              "templateHash": "1402110474327127720"
+              "templateHash": "9108414117153553127"
             }
           },
           "parameters": {
@@ -298,20 +298,6 @@
               "dependsOn": [
                 "[resourceId('Microsoft.Kusto/clusters', parameters('adxName'))]"
               ]
-            },
-            {
-              "type": "Microsoft.Kusto/clusters/databases/scripts",
-              "apiVersion": "2021-08-27",
-              "name": "[format('{0}/{1}/{2}', parameters('adxName'), 'PatientMonitoring', 'ConfigDB')]",
-              "properties": {
-                "forceUpdateTag": "Test2",
-                "scriptUrl": "https://patientmonitoringsa.blob.core.windows.net/script/configDB.kql",
-                "scriptUrlSasToken": "sp=r&st=2022-01-19T19:44:47Z&se=2025-01-20T03:44:47Z&spr=https&sv=2020-08-04&sr=b&sig=kFSN5jRC9r3GNe9WHclIDMbXP%2Bcx3pvJyhGaLUyFJXk%3D"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Kusto/clusters', parameters('adxName'))]",
-                "[resourceId('Microsoft.Kusto/clusters/databases', parameters('adxName'), 'PatientMonitoring')]"
-              ]
             }
           ],
           "outputs": {
@@ -322,6 +308,10 @@
             "adxClusterIdentity": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Kusto/clusters', parameters('adxName')), '2021-08-27', 'full').identity.principalId]"
+            },
+            "adxName": {
+              "type": "string",
+              "value": "[parameters('adxName')]"
             }
           }
         }
@@ -465,7 +455,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.4.1124.51302",
-              "templateHash": "18068030244355493319"
+              "templateHash": "1170099228799758001"
             }
           },
           "parameters": {
@@ -507,6 +497,10 @@
             "digitalTwinName": {
               "type": "string",
               "value": "[parameters('digitalTwinName')]"
+            },
+            "digitalTwinHostName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.DigitalTwins/digitalTwinsInstances', parameters('digitalTwinName'))).hostName]"
             }
           }
         }
@@ -550,6 +544,10 @@
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('digitalTwinlName')), '2020-10-01').outputs.digitalTwinName.value]"
     },
+    "digitalTwinHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('digitalTwinlName')), '2020-10-01').outputs.digitalTwinHostName.value]"
+    },
     "saName": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}{1}', parameters('saName'), parameters('deploymentSuffix'))), '2020-10-01').outputs.saName.value]"
@@ -557,6 +555,10 @@
     "saKey": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.Resources/deployments', format('{0}{1}', parameters('saName'), parameters('deploymentSuffix'))), '2020-10-01').outputs.saKey.value]"
+    },
+    "adxName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', parameters('adxName')), '2020-10-01').outputs.adxName.value]"
     }
   }
 }

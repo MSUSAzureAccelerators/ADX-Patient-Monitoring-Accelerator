@@ -1,11 +1,29 @@
 #!/bin/bash
 
+currentDate=$(date)
+tomorrow=$(date +"%Y-%m-%dT00:00:00Z" -d "$currentDate +1 days")
+
 echo "1. Starting configuration for deployment $deploymentName"
 # Get Digital Twins instance name
 dtName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.digitalTwinName.value --output tsv)
+dtHostName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.digitalTwinHostName.value --output tsv)
+saName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.saName.value --output tsv)
+saKey=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.saKey.value --output tsv)
+adxName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxName.value --output tsv)
+
+# Modify kql script
+echo "2. Modifying KQL script"
+sed -i "s/<dtURI>/$dtHostName/g" config/configDB.kql
+az storage blob upload -f config/configDB.kql -c adxscript -n configDB.kql --account-key $saKey --account-name $saName --only-show-errors --output none
+
+# Configure ADX Cluster
+echo "3. Running script to configure Azure Data Explorer"
+blobURI="https://$saName.blob.core.windows.net/adxscript/configDB.kql"
+blobSAS=$(az storage blob generate-sas --account-name $saName --container-name adxscript --name configDB.kql --permissions acdrw --expiry $tomorrow --auth-mode login --as-user)
+az kusto script create --cluster-name $adxName --database-name PatientMonitoring --force-update-tag "config1" --script-url $blobURI --script-url-sas-token $blobSAS --resource-group ADXConnectedDevices13516 --name 'configDB' --only-show-errors --output none
 
 # Create all the models from folder in git repo
-echo "2. Creating model for Azure Digital Twins $dtName"
+echo "4. Creating model for Azure Digital Twins $dtName"
 az dt model create -n $dtName --from-directory ./dtconfig
 az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Facility;1" --twin-id Arkham
 az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Department;1" --twin-id Rehabilitation
@@ -30,7 +48,7 @@ vitalPatchDevices=$(az deployment group show -n $deploymentName -g $rgName --que
 
 # Deploy Smart Knee Brace imulated devices
 #smartKneeBraceDevices=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.smartKneeBraceDeviceNumber.value --output tsv)
-echo "3. Creating $smartKneeBraceDevices Smart Knee Brace devices on IoT Central: $iotCentralName ($iotCentralAppID) and Digital Twins: $dtName"
+echo "5. Creating $smartKneeBraceDevices Smart Knee Brace devices on IoT Central: $iotCentralName ($iotCentralAppID) and Digital Twins: $dtName"
 for (( c=1; c<=$smartKneeBraceDevices; c++ ))
 do
     deviceId=$(cat /proc/sys/kernel/random/uuid)
@@ -51,7 +69,7 @@ done
  
 # DeployVitals Patch Simulated devices
 #vitalPatchDevices=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.vitalPatchDevicesNumber.value)
-echo "4. Creating $vitalPatchDevices Vitals Patch devices on IoT Central: $iotCentralName ($iotCentralAppID) and Digital Twins: $dtName"
+echo "6. Creating $vitalPatchDevices Vitals Patch devices on IoT Central: $iotCentralName ($iotCentralAppID) and Digital Twins: $dtName"
 for (( c=1; c<=$vitalPatchDevices; c++ ))
 do
     deviceId=$(cat /proc/sys/kernel/random/uuid)
@@ -70,12 +88,12 @@ do
 done
 
 # On IoT Central, create an Event Hub export destination with json payload
-echo "5. Creating Event Hub export destination on IoT Central: $iotCentralName ($iotCentralAppID)"
+echo "7. Creating Event Hub export destination on IoT Central: $iotCentralName ($iotCentralAppID)"
 eventHubConnectionString=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.eventHubConnectionString.value --output tsv)
 az iot central export destination create --app-id $iotCentralAppID --dest-id 'eventHubExport' --type eventhubs@v1 --name 'eventHubExport' --authorization '{"type": "connectionString", "connectionString": "'$eventHubConnectionString'" }' --output none
 
 # Create IoT Central App Export using previoulsy created destination
-echo "6. Creating IoT Central App Export on IoT Central: $iotCentralName ($iotCentralAppID)"
+echo "8. Creating IoT Central App Export on IoT Central: $iotCentralName ($iotCentralAppID)"
 az iot central export create --app-id $iotCentralAppID --export-id 'iotEventHubExport' --display-name 'iotEventHubExport' --source 'telemetry' --destinations '[{"id": "eventHubExport"}]' --output none
 
-echo "7. Configuration completed"
+echo "9. Configuration completed"
