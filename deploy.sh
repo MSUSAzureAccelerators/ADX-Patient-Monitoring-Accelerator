@@ -1,6 +1,8 @@
 #!/bin/bash
 
+# Helper Functions
 function banner() {
+    clear
     echo '           _______   __           _____      _   _            _    '
     echo '     /\   |  __ \ \ / /          |  __ \    | | (_)          | |   '
     echo '    /  \  | |  | \ V /   ______  | |__) |_ _| |_ _  ___ _ __ | |_  '
@@ -35,30 +37,41 @@ function deletePreLine() {
     echo -ne "\r\033[0K"
 }
 
+# Service Specific Functions
+function add_iot_extensions() {
+    (az extension add --name azure-iot --only-show-errors --output none; \
+    az extension update --name azure-iot --only-show-errors --output none)
+    spinner "Installing IoT Extensions"
+    deletePreLine
+}
+
+function create_resource_group() {
+    (az group create --name $rgName --location "East US" --only-show-errors --output none)
+    spinner "Installing IoT Extensions"
+    deletePreLine
+}
+
+function deploy_azure_services() {
+    (az deployment group create -n $deploymentName -g $rgName \
+        --template-file main.bicep \
+        --parameters deploymentSuffix=$randomNum principalId=$principalId @patientmonitoring.parameters.json \
+        --only-show-errors --output none) &
+    spinner "Installing IoT Extensions"
+    deletePreLine
+}
+
 # Define required variables
 randomNum=$RANDOM
 currentDate=$(date)
 tomorrow=$(date +"%Y-%m-%dT00:00:00Z" -d "$currentDate +1 days")
-
-# Install/Update required eztensions
-echo '1. Starting Solution Setup'
-(az extension add --name azure-iot --only-show-errors --output none; az extension update --name azure-iot --only-show-errors --output none) &
-spinner "Installing IoT Extensions"
-deletePreLine
-
-# Create parent resurce group
-rgName=ADXConnectedDevices$randomNum
-(az group create --name $rgName --location "East US" --only-show-errors --output none) &
-spinner "Creating resource group: $rgName"
-deletePreLine
-
-# Create all additional services using main Bicep template
 deploymentName=ADXConnectedDevicesDeployment$randomNum
+rgName=ADXConnectedDevices$randomNum
 principalId=$(az ad signed-in-user show --query objectId -o tsv)
-(az deployment group create -n $deploymentName -g $rgName --template-file main.bicep --parameters deploymentSuffix=$randomNum principalId=$principalId @patientmonitoring.parameters.json --only-show-errors --output none) &
-spinner "Initiating Deployment: $deploymentName"
-deletePreLine
 
-echo "3. Setup completed. Proceed to Configure"
-export rgName
-export deploymentName
+# Show banner
+banner 
+
+echo '1. Starting solution deployment'
+add_iot_extensions # Install/Update required eztensions
+create_resource_group # Create parent resurce group
+deploy_azure_services # Create all additional services using main Bicep template
