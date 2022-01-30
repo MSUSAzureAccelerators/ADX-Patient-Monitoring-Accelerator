@@ -76,20 +76,22 @@ function configure_ADX_cluster() {
         --database-name "PatientMonitoring" --location $location --consumer-group '$Default' \
         --event-hub-resource-id $eventHubResourceId --managed-identity-resource-id $adxResoureId \
         --data-format 'JSON' --table-name 'TelemetryRaw' --mapping-rule-name 'TelemetryRaw_mapping' \
-        --compression 'None' --resource-group $rgName ) &
+        --compression 'None' --resource-group $rgName --only-show-errors --output none) &
     spinner "Configuring ADX Cluster"
     deletePreLine
 }
 
 function create_digital_twin_models() {
-    (az dt model create -n $dtName --from-directory ./dtconfig   ; \
-    az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Facility;1" --twin-id Arkham ; \
-    az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Department;1" --twin-id Rehabilitation ; \
-    az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Department;1" --twin-id Psychology ; \
+    (az dt model create -n $dtName --from-directory ./dtconfig  --only-show-errors --output none ; \
+    az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Facility;1" --twin-id Arkham --only-show-errors --output none; \
+    az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Department;1" --twin-id Rehabilitation --only-show-errors --output none; \
+    az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Department;1" --twin-id Psychology --only-show-errors --output none; \
     az dt twin relationship create -n $dtName --relationship-id 'containsRehab'  \
-        --relationship 'facilitycontainsdepartment' --source 'Arkham' --target 'Rehabilitation' ; \
+        --relationship 'facilitycontainsdepartment' --source 'Arkham' --target 'Rehabilitation' \
+        --only-show-errors --output none; \
     az dt twin relationship create -n $dtName --relationship-id 'containsPsychology'  \
-        --relationship 'facilitycontainsdepartment' --source 'Arkham' --target 'Psychology' ) &
+        --relationship 'facilitycontainsdepartment' --source 'Arkham' --target 'Psychology' \
+        --only-show-errors --output none) &
     spinner "Creating model for Azure Digital Twins $dtName"
     deletePreLine
 }
@@ -120,8 +122,8 @@ function deploy_vitals_patch_devices() {
     for (( c=1; c<=$vitalPatchDevices; c++ ))
     do
         deviceId=$(cat /proc/sys/kernel/random/uuid)
-        az iot central device create --device-id $deviceId --app-id $iotCentralAppID --template dtmi:hpzy1kfcbt2:umua7dplmbd --simulated --only-show-errors --output none
-
+        az iot central device create --device-id $deviceId --app-id $iotCentralAppID \
+            --template dtmi:hpzy1kfcbt2:umua7dplmbd --simulated --only-show-errors --output none
         if ((c%2)); then
         department=${departments[0]}
         patient=${rehapPatients[c%3]}
@@ -130,7 +132,8 @@ function deploy_vitals_patch_devices() {
         patient=${psychPatients[c%3]}
         fi 
         (az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:VirtualPatch;1" \
-            --twin-id $deviceId --properties "{'PatientId': '${patient}'}" ;\
+            --twin-id $deviceId --properties "{'PatientId': '${patient}'}" \
+            --only-show-errors --output none ; \
         az dt twin relationship create -n $dtName --relationship-id "owns${deviceId}" \
             --relationship 'departmentownsdevice' --source $department --target $deviceId --only-show-errors --output none ) &
         spinner "Creating $vitalPatchDevices Vitals Patch devices on IoT Central: $iotCentralName ($iotCentralAppID) and Digital Twins: $dtName"
@@ -142,9 +145,10 @@ function configure_IoT_Central_output() {
     (az iot central export destination create --app-id $iotCentralAppID --dest-id 'eventHubExport' \
         --type eventhubs@v1 --name 'eventHubExport' \
         --authorization '{"type": "connectionString", "connectionString": "'$eventHubConnectionString'" }' \
-        --output none  ;\
+        --only-show-errors --output none  ; \
     az iot central export create --app-id $iotCentralAppID --export-id 'iotEventHubExport' \
-        --display-name 'iotEventHubExport' --source 'telemetry' --destinations '[{"id": "eventHubExport"}]' --output none) &
+        --display-name 'iotEventHubExport' --source 'telemetry' --destinations '[{"id": "eventHubExport"}]' \
+        --only-show-errors --output none) &
     spinner " Creating IoT Central App export and destination on IoT Central: $iotCentralName ($iotCentralAppID)"
     deletePreLine
 }
@@ -188,10 +192,9 @@ eventHubConnectionString=$(az deployment group show -n $deploymentName -g $rgNam
 
 # Start Configuration
 configure_ADX_cluster # Configure ADX cluster
-create_digital_twin_models # Create all the models from folder in git repo
-
 # Get/Refresh IoT Central Token 
 az account get-access-token --resource https://apps.azureiotcentral.com --only-show-errors --output none
+create_digital_twin_models # Create all the models from folder in git repo
 
 # Complete configuration
 deploy_smart_knee_devices # Deploy Smart Knee Brace simulated devices
