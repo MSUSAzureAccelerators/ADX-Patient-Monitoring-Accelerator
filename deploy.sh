@@ -38,9 +38,11 @@ function deletePreLine() {
 }
 
 # Service Specific Functions
-function add_iot_extensions() {
+function add_required_extensions() {
     (az extension add --name azure-iot --only-show-errors --output none; \
-    az extension update --name azure-iot --only-show-errors --output none)
+    az extension update --name azure-iot --only-show-errors --output none; \
+    az extension add --name kusto --only-show-errors --output none; \
+    az extension update --name kusto --only-show-errors --output none) &
     spinner "Installing IoT Extensions"
     deletePreLine
 }
@@ -144,7 +146,7 @@ psychPatients=('Patient4' 'Patient5' 'Patient6')
 banner # Show Welcome banner
 
 echo '1. Starting solution deployment'
-add_iot_extensions # Install/Update required eztensions
+add_required_extensions # Install/Update required eztensions
 create_resource_group # Create parent resurce group
 deploy_azure_services # Create all additional services using main Bicep template
 
