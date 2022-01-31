@@ -39,31 +39,42 @@ function deletePreLine() {
 
 # Service Specific Functions
 function add_required_extensions() {
-    (az extension add --name azure-iot --only-show-errors --output none; \
+    az extension add --name azure-iot --only-show-errors --output none; \
     az extension update --name azure-iot --only-show-errors --output none; \
     az extension add --name kusto --only-show-errors --output none; \
-    az extension update --name kusto --only-show-errors --output none) &
-    spinner "Installing IoT Extensions"
-    deletePreLine
+    az extension update --name kusto --only-show-errors --output none
 }
 
 function create_resource_group() {
-    (az group create --name $rgName --location "East US" --only-show-errors --output none) &
-    spinner "Creating Resource Gorup"
-    deletePreLine
+    az group create --name $rgName --location "East US" --only-show-errors --output none
 }
 
 function deploy_azure_services() {
-    (az deployment group create -n $deploymentName -g $rgName \
+    az deployment group create -n $deploymentName -g $rgName \
         --template-file main.bicep \
         --parameters deploymentSuffix=$randomNum principalId=$principalId @patientmonitoring.parameters.json \
-        --only-show-errors --output none) &
-    spinner "Deploying Azure Services"
-    deletePreLine
+        --only-show-errors --output none
+}
+
+function get_deployment_output() {
+    dtName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.digitalTwinName.value --output tsv)
+    dtHostName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.digitalTwinHostName.value --output tsv)
+    saName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.saName.value --output tsv)
+    saKey=$(az storage account keys list --account-name $saName --query [0].value -o tsv)
+    adxName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxName.value --output tsv)
+    adxResoureId=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxClusterId.value --output tsv)
+    location=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.location.value --output tsv)
+    eventHubNSId=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.eventhubClusterId.value --output tsv)
+    eventHubResourceId="$eventHubNSId/eventhubs/PatientMonitoring"
+    iotCentralName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.iotCentralName.value --output tsv)
+    iotCentralAppID=$(az iot central app show -n $iotCentralName -g $rgName --query  applicationId --output tsv)
+    smartKneeBraceDevices=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.smartKneeBraceDeviceNumber.value --output tsv)
+    vitalPatchDevices=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.vitalPatchDevicesNumber.value --output tsv)
+    eventHubConnectionString=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.eventHubConnectionString.value --output tsv)
 }
 
 function configure_ADX_cluster() {
-    (sed -i "s/<dtURI>/$dtHostName/g" config/configDB.kql ;\
+    sed -i "s/<dtURI>/$dtHostName/g" config/configDB.kql ;\
     az storage blob upload -f config/configDB.kql -c adxscript -n configDB.kql \
         --account-key $saKey --account-name $saName --only-show-errors --output none  ;\
     blobURI="https://$saName.blob.core.windows.net/adxscript/configDB.kql"  ;\
@@ -76,13 +87,11 @@ function configure_ADX_cluster() {
         --database-name "PatientMonitoring" --location $location --consumer-group '$Default' \
         --event-hub-resource-id $eventHubResourceId --managed-identity-resource-id $adxResoureId \
         --data-format 'JSON' --table-name 'TelemetryRaw' --mapping-rule-name 'TelemetryRaw_mapping' \
-        --compression 'None' --resource-group $rgName --only-show-errors --output none) &
-    spinner "Configuring ADX Cluster"
-    deletePreLine
+        --compression 'None' --resource-group $rgName --only-show-errors --output none
 }
 
 function create_digital_twin_models() {
-    (az dt model create -n $dtName --from-directory ./dtconfig  --only-show-errors --output none ; \
+    az dt model create -n $dtName --from-directory ./dtconfig  --only-show-errors --output none ; \
     az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Facility;1" --twin-id Arkham --only-show-errors --output none; \
     az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Department;1" --twin-id Rehabilitation --only-show-errors --output none; \
     az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:Department;1" --twin-id Psychology --only-show-errors --output none; \
@@ -91,9 +100,7 @@ function create_digital_twin_models() {
         --only-show-errors --output none; \
     az dt twin relationship create -n $dtName --relationship-id 'containsPsychology'  \
         --relationship 'facilitycontainsdepartment' --source 'Arkham' --target 'Psychology' \
-        --only-show-errors --output none) &
-    spinner "Creating model for Azure Digital Twins $dtName"
-    deletePreLine
+        --only-show-errors --output none
 }
 
 function deploy_smart_knee_devices() {
@@ -109,12 +116,10 @@ function deploy_smart_knee_devices() {
         department=${departments[1]}
         patient=${psychPatients[c%3]}
         fi    
-        (az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:KneeBrace;1" --twin-id $deviceId \
+        az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:KneeBrace;1" --twin-id $deviceId \
             --properties "{'PatientId': '${patient}'}" --only-show-errors --output none ;\
         az dt twin relationship create -n $dtName --relationship-id "owns${deviceId}" \
-            --relationship 'departmentownsdevice' --source $department --target $deviceId --only-show-errors --output none) &
-        spinner "Creating $smartKneeBraceDevices Smart Knee Brace devices on IoT Central: $iotCentralName ($iotCentralAppID) and Digital Twins: $dtName"
-        deletePreLine
+            --relationship 'departmentownsdevice' --source $department --target $deviceId --only-show-errors --output none
     done
 }
 
@@ -131,26 +136,22 @@ function deploy_vitals_patch_devices() {
         department=${departments[1]}
         patient=${psychPatients[c%3]}
         fi 
-        (az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:VirtualPatch;1" \
+        az dt twin create -n $dtName --dtmi "dtmi:PatientMonitoring:VirtualPatch;1" \
             --twin-id $deviceId --properties "{'PatientId': '${patient}'}" \
             --only-show-errors --output none ; \
         az dt twin relationship create -n $dtName --relationship-id "owns${deviceId}" \
-            --relationship 'departmentownsdevice' --source $department --target $deviceId --only-show-errors --output none ) &
-        spinner "Creating $vitalPatchDevices Vitals Patch devices on IoT Central: $iotCentralName ($iotCentralAppID) and Digital Twins: $dtName"
-        deletePreLine
+            --relationship 'departmentownsdevice' --source $department --target $deviceId --only-show-errors --output none
     done
 }
 
 function configure_IoT_Central_output() {
-    (az iot central export destination create --app-id $iotCentralAppID --dest-id 'eventHubExport' \
+    az iot central export destination create --app-id $iotCentralAppID --dest-id 'eventHubExport' \
         --type eventhubs@v1 --name 'eventHubExport' \
         --authorization '{"type": "connectionString", "connectionString": "'$eventHubConnectionString'" }' \
         --only-show-errors --output none  ; \
     az iot central export create --app-id $iotCentralAppID --export-id 'iotEventHubExport' \
         --display-name 'iotEventHubExport' --source 'telemetry' --destinations '[{"id": "eventHubExport"}]' \
-        --only-show-errors --output none) &
-    spinner " Creating IoT Central App export and destination on IoT Central: $iotCentralName ($iotCentralAppID)"
-    deletePreLine
+        --only-show-errors --output none
 }
 
 # Define required variables
@@ -169,36 +170,30 @@ psychPatients=('Patient4' 'Patient5' 'Patient6')
 banner # Show Welcome banner
 
 echo '1. Starting solution deployment'
-add_required_extensions # Install/Update required eztensions
-create_resource_group # Create parent resurce group
-deploy_azure_services # Create all additional services using main Bicep template
+add_required_extensions & # Install/Update required eztensions
+spinner "Installing IoT Extensions"
+create_resource_group & # Create parent resurce group
+spinner "Creating Resource Group"
+deploy_azure_services & # Create all additional services using main Bicep template
+spinner "Deploying Azure Services"
 
 echo "2. Starting configuration for deployment $deploymentName"
-# Get Deployment output values
-dtName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.digitalTwinName.value --output tsv)
-dtHostName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.digitalTwinHostName.value --output tsv)
-saName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.saName.value --output tsv)
-saKey=$(az storage account keys list --account-name $saName --query [0].value -o tsv)
-adxName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxName.value --output tsv)
-adxResoureId=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxClusterId.value --output tsv)
-location=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.location.value --output tsv)
-eventHubNSId=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.eventhubClusterId.value --output tsv)
-eventHubResourceId="$eventHubNSId/eventhubs/PatientMonitoring"
-iotCentralName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.iotCentralName.value --output tsv)
-iotCentralAppID=$(az iot central app show -n $iotCentralName -g $rgName --query  applicationId --output tsv)
-smartKneeBraceDevices=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.smartKneeBraceDeviceNumber.value --output tsv)
-vitalPatchDevices=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.vitalPatchDevicesNumber.value --output tsv)
-eventHubConnectionString=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.eventHubConnectionString.value --output tsv)
+get_deployment_output  # Get Deployment output values
 
 # Start Configuration
-configure_ADX_cluster # Configure ADX cluster
+configure_ADX_cluster & # Configure ADX cluster
+spinner "Configuring ADX Cluster"
 # Get/Refresh IoT Central Token 
 az account get-access-token --resource https://apps.azureiotcentral.com --only-show-errors --output none
-create_digital_twin_models # Create all the models from folder in git repo
+create_digital_twin_models & # Create all the models from folder in git repo
+spinner "Creating model for Azure Digital Twins $dtName"
 
 # Complete configuration
+echo "Creating $smartKneeBraceDevices Smart Knee Brace devices on IoT Central: $iotCentralName ($iotCentralAppID) and Digital Twins: $dtName"
 deploy_smart_knee_devices # Deploy Smart Knee Brace simulated devices
+echo "Creating $vitalPatchDevices Vitals Patch devices on IoT Central: $iotCentralName ($iotCentralAppID) and Digital Twins: $dtName"
 deploy_vitals_patch_devices # Deploy Vitals Patch Simulated devices
-configure_IoT_Central_output # On IoT Central, create an Event Hub export and destination with json payload
+configure_IoT_Central_output & # On IoT Central, create an Event Hub export and destination with json payload
+spinner " Creating IoT Central App export and destination on IoT Central: $iotCentralName ($iotCentralAppID)"
 
 echo "3. Configuration completed"
