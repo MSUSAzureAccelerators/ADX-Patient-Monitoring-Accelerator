@@ -64,4 +64,4 @@ On the [Azure Cloud Shell](https://shell.azure.com/) run the following commands 
 - deploy.sh: script to deploy the solution. THe only one you need to run 
 - main.bicep: main Bicep deployment file. It includes all the other Bicep deployment files (modules)
 - patientmonitoring.parameters.json: parameters file used to customize the deployment
-- -README.md: This README file
+- README.md: This README file
