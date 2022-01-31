@@ -1,0 +1,26 @@
+{
+  "@id": "dtmi:PatientMonitoring:Facility;1",
+  "@type": "Interface",
+  "displayName": "Facility",
+  "contents": [
+    {
+      "@type": "Relationship",
+      "name": "facilitycontainsdepartment",
+      "displayName": "Facility_contains_Department",
+      "properties": [
+		{
+		  "@type": "Property",
+		  "name": "Name",
+		  "schema": "string"
+		},
+		{
+		  "@type": "Property",
+		  "name": "Address",
+		  "schema": "string"
+		}
+	  ]
+    }
+    
+  ],
+  "@context": "dtmi:dtdl:context;2"
+}

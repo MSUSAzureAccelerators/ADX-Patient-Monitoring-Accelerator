@@ -1,0 +1,81 @@
+.create-merge table KneeBrace (TimeStamp:datetime, DeviceId:string, Acceleration:dynamic, RangeofMotion:int, KneeBend:int, BatteryLevel:int, DeviceTemp:real)  
+
+.create-merge table TelemetryRaw (applicationId:guid, deviceId:string, messageSource:string, ['schema']:string, enqueuedTime:datetime, templateId:string, telemetry:dynamic, messageProperties:dynamic, enrichments:dynamic)  
+
+.create table TelemetryRaw ingestion json mapping 'TelemetryRaw_mapping' '[{"column":"applicationId", "Properties":{"Path":"$[\'applicationId\']"}},{"column":"messageSource", "Properties":{"Path":"$[\'messageSource\']"}},{"column":"schema", "Properties":{"Path":"$[\'schema\']"}},{"column":"messageProperties", "Properties":{"Path":"$[\'messageProperties\']"}},{"column":"enrichments", "Properties":{"Path":"$[\'enrichments\']"}},{"column":"templateId", "Properties":{"Path":"$[\'templateId\']"}},{"column":"deviceId", "Properties":{"Path":"$[\'deviceId\']"}},{"column":"telemetry", "Properties":{"Path":"$[\'telemetry\']"}},{"column":"enqueuedTime", "Properties":{"Path":"$[\'enqueuedTime\']"}}]'
+
+.create-merge table VirtualPatch (TimeStamp:datetime, DeviceId:string, BatteryLevel:int, DeviceTemp:real, HeartRate:int, RespiratoryRate:int, HeartRateVariability:int, BodyTemperature:real, BloodPressure:dynamic, Activity:string)  
+
+.create-merge table VirtualPatchFall (TimeStamp:datetime, DeviceId:string, FallDetection:string)  
+
+.create-or-alter function with (folder = "Analytics/IoT", skipvalidation = "true") GetDepartments(facilityName:string) {
+	let ADTendpoint = "https://PatientMonitoring.api.wus2.digitaltwins.azure.net";
+	let ADTquery = strcat("Select Department.$dtId as Department FROM DIGITALTWINS T JOIN Department RELATED T.facilitycontainsdepartment where T.$dtId = '", facilityName, "'");
+	evaluate azure_digital_twins_query_request(ADTendpoint, ADTquery)
+    | project Department=tostring(Department)
+} 
+
+.create-or-alter function with (folder = "Analytics/IoT", skipvalidation = "true") GetDevices(facilityName:string, department:string) {
+	let ADTendpoint = "https://PatientMonitoring.api.wus2.digitaltwins.azure.net";
+	let ADTquery = strcat("Select Device.$dtId as Device FROM DIGITALTWINS T JOIN Department RELATED T.facilitycontainsdepartment JOIN Device RELATED Department.departmentownsdevice where T.$dtId = '", facilityName, "' AND Department.$dtId = '", department, "'");
+	evaluate azure_digital_twins_query_request(ADTendpoint, ADTquery)
+    | project Device=tostring(Device)
+    | order by Device asc
+} 
+
+.create-or-alter function with (folder = "Analytics/IoT", skipvalidation = "true") GetFacilities() {
+	let ADTendpoint = "https://PatientMonitoring.api.wus2.digitaltwins.azure.net";
+	let ADTquery = strcat("Select T.$dtId as Facility FROM DIGITALTWINS T where T.$metadata.$model = 'dtmi:PatientMonitoring:MedicalFacility;1'");
+	evaluate azure_digital_twins_query_request(ADTendpoint, ADTquery)
+    | project Facility=tostring(Facility)
+} 
+
+.create-or-alter function with (folder = "Analytics/IoT", skipvalidation = "true") GetTwinsbyFacility(facilityName:string="Arkham") {
+	let ADTendpoint = "https://PatientMonitoring.api.wus2.digitaltwins.azure.net";
+	let ADTquery = strcat(```Select T.$dtId as Facility,Department.$dtId as Department,Device.$dtId as deviceId, Device.PatientId as PatientId, Device.StartDate as StartDate FROM DIGITALTWINS T 
+    JOIN Department RELATED T.facilitycontainsdepartment 
+    JOIN Device RELATED Department.departmentownsdevice 
+    where T.$dtId = '``` , facilityName, "'");
+	evaluate azure_digital_twins_query_request(ADTendpoint, ADTquery)
+    | project Facility=tostring(Facility), Department=tostring(Department),DeviceId=tostring(deviceId), PatientId=tostring(PatientId), StartDate=todatetime(StartDate)
+} 
+
+.create-or-alter function with (folder = "Analytics/IoT", skipvalidation = "true") GetTwinsbyFacilityDepartment(facilityName:string="Arkham", departmentName:string="Psychiatry") {
+	let ADTendpoint = "https://PatientMonitoring.api.wus2.digitaltwins.azure.net";
+	let ADTquery = strcat(```Select T.$dtId as Facility,Department.$dtId as Department,Device.$dtId as deviceId, Device.PatientId as PatientId, Device.StartDate as StartDate FROM DIGITALTWINS T 
+    JOIN Department RELATED T.facilitycontainsdepartment 
+    JOIN Device RELATED Department.departmentownsdevice 
+    where T.$dtId = '``` , facilityName, 
+    "' AND Department.$dtId = '", departmentName, "'");
+	evaluate azure_digital_twins_query_request(ADTendpoint, ADTquery)
+    | project Facility=tostring(Facility), Department=tostring(Department),DeviceId=tostring(deviceId), PatientId=tostring(PatientId), StartDate=todatetime(StartDate)
+} 
+
+.create-or-alter function with (folder = "UpdatePolicy", skipvalidation = "true") Update_KneeBrace() {   
+TelemetryRaw
+| where templateId == 'dtmi:j71gm4wvkse:q2hnw2dwt'
+| project enqueuedTime,deviceId, todynamic(telemetry.Acceleration), toint(telemetry.RangeOfMotion), toint(telemetry.KneeBend), toint(telemetry.BatteryLevel), todouble(telemetry.DeviceTemperature)
+} 
+
+.create-or-alter function with (folder = "UpdatePolicy", skipvalidation = "true") Update_VirtualPatch() {   
+TelemetryRaw
+| where templateId == 'dtmi:hpzy1kfcbt2:umua7dplmbd'
+| where telemetry !has 'FallDetection'
+| project enqueuedTime, deviceId, toint(telemetry.BatteryLevel), todouble(telemetry.DeviceTemperature), toint(telemetry.HeartRate), toint(telemetry.RespiratoryRate), toint(telemetry.HeartRateVariability), todouble(telemetry.BodyTemperature), todynamic(telemetry.BloodPressure), tostring(telemetry.Activity)
+} 
+
+.create-or-alter function with (folder = "UpdatePolicy", skipvalidation = "true") Update_VirtualPatchFall() {   
+TelemetryRaw
+| where templateId == 'dtmi:hpzy1kfcbt2:umua7dplmbd'
+| where telemetry has 'FallDetection'
+| project enqueuedTime, deviceId, tostring(telemetry.FallDetection)
+} 
+
+.alter table KneeBrace policy update 
+@'[{ "IsEnabled": true, "Source": "TelemetryRaw", "Query": "Update_KneeBrace()", "IsTransactional": false, "PropagateIngestionProperties": false}]'
+
+.alter table VirtualPatch policy update 
+@'[{ "IsEnabled": true, "Source": "TelemetryRaw", "Query": "Update_VirtualPatch()", "IsTransactional": false, "PropagateIngestionProperties": false}]'
+
+.alter table VirtualPatchFall policy update 
+@'[{ "IsEnabled": true, "Source": "TelemetryRaw", "Query": "Update_VirtualPatchFall()", "IsTransactional": false, "PropagateIngestionProperties": false}]'

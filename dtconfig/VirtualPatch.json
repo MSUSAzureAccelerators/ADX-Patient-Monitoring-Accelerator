@@ -1,0 +1,33 @@
+{
+  "@id": "dtmi:PatientMonitoring:VirtualPatch;1",
+  "@type": "Interface",
+  "displayName": "Virtual Patch",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "DeviceId",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "DeviceTemp",
+      "schema": "double"
+    },
+    {
+      "@type": "Property",
+      "name": "BatteryLevel",
+      "schema": "double"
+    },
+	{
+      "@type": "Property",
+      "name": "PatientId",
+      "schema": "string"
+    },
+	{
+      "@type": "Property",
+      "name": "StartDate",
+      "schema": "string"
+    }
+  ],
+  "@context": "dtmi:dtdl:context;2"
+}
