@@ -1,12 +1,18 @@
 .create-merge table KneeBrace (TimeStamp:datetime, DeviceId:string, Acceleration:dynamic, RangeofMotion:int, KneeBend:int, BatteryLevel:int, DeviceTemp:real)  
 
+.create table ['KneeBrace'] ingestion csv mapping 'KneeBrace_mapping' '[{"column":"TimeStamp", "Properties":{"Ordinal":"0"}},{"column":"DeviceId", "Properties":{"Ordinal":"1"}},{"column":"Acceleration", "Properties":{"Ordinal":"2"}},{"column":"RangeofMotion", "Properties":{"Ordinal":"3"}},{"column":"KneeBend", "Properties":{"Ordinal":"4"}},{"column":"BatteryLevel", "Properties":{"Ordinal":"5"}},{"column":"DeviceTemp", "Properties":{"Ordinal":"6"}}]'
+
 .create-merge table TelemetryRaw (applicationId:guid, deviceId:string, messageSource:string, ['schema']:string, enqueuedTime:datetime, templateId:string, telemetry:dynamic, messageProperties:dynamic, enrichments:dynamic)  
 
 .create table TelemetryRaw ingestion json mapping 'TelemetryRaw_mapping' '[{"column":"applicationId", "Properties":{"Path":"$[\'applicationId\']"}},{"column":"messageSource", "Properties":{"Path":"$[\'messageSource\']"}},{"column":"schema", "Properties":{"Path":"$[\'schema\']"}},{"column":"messageProperties", "Properties":{"Path":"$[\'messageProperties\']"}},{"column":"enrichments", "Properties":{"Path":"$[\'enrichments\']"}},{"column":"templateId", "Properties":{"Path":"$[\'templateId\']"}},{"column":"deviceId", "Properties":{"Path":"$[\'deviceId\']"}},{"column":"telemetry", "Properties":{"Path":"$[\'telemetry\']"}},{"column":"enqueuedTime", "Properties":{"Path":"$[\'enqueuedTime\']"}}]'
 
 .create-merge table VirtualPatch (TimeStamp:datetime, DeviceId:string, BatteryLevel:int, DeviceTemp:real, HeartRate:int, RespiratoryRate:int, HeartRateVariability:int, BodyTemperature:real, BloodPressure:dynamic, Activity:string)  
 
+.create table ['VirtualPatch'] ingestion csv mapping 'VirtualPatch_mapping' '[{"column":"TimeStamp", "Properties":{"Ordinal":"0"}},{"column":"DeviceId", "Properties":{"Ordinal":"1"}},{"column":"BatteryLevel", "Properties":{"Ordinal":"2"}},{"column":"DeviceTemp", "Properties":{"Ordinal":"3"}},{"column":"BodyTemperature", "Properties":{"Ordinal":"7"}},{"column":"HeartRate", "Properties":{"Ordinal":"4"}},{"column":"RespiratoryRate", "Properties":{"Ordinal":"5"}},{"column":"HeartRateVariability", "Properties":{"Ordinal":"6"}},{"column":"Activity", "Properties":{"Ordinal":"9"}},{"column":"BloodPressure", "Properties":{"Ordinal":"8"}}]'
+
 .create-merge table VirtualPatchFall (TimeStamp:datetime, DeviceId:string, FallDetection:string)  
+
+.create table ['VirtualPatchFall'] ingestion csv mapping 'VirtualPatchFall_mapping' '[{"column":"TimeStamp", "Properties":{"Ordinal":"0"}},{"column":"DeviceId", "Properties":{"Ordinal":"1"}},{"column":"FallDetection", "Properties":{"Ordinal":"2"}}]'
 
 .create-or-alter function with (folder = "Analytics/IoT", skipvalidation = "true") GetDepartments(facilityName:string) {
 	let ADTendpoint = "https://PatientMonitoring.api.wus2.digitaltwins.azure.net";

@@ -61,11 +61,15 @@ function get_deployment_output() {
     dtHostName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.digitalTwinHostName.value --output tsv)
     saName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.saName.value --output tsv)
     saKey=$(az storage account keys list --account-name $saName --query [0].value -o tsv)
+    saId=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.saId.value --output tsv)
     adxName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxName.value --output tsv)
     adxResoureId=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.adxClusterId.value --output tsv)
     location=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.location.value --output tsv)
     eventHubNSId=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.eventhubClusterId.value --output tsv)
     eventHubResourceId="$eventHubNSId/eventhubs/PatientMonitoring"
+    eventHubKneeBraceId="$eventHubNSId/eventhubs/kneebrace"
+    eventHubVirtualPatchId="$eventHubNSId/eventhubs/virtualpatch"
+    eventHubVirtualPatchFallId="$eventHubNSId/eventhubs/virtualpatchfall"
     iotCentralName=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.iotCentralName.value --output tsv)
     iotCentralAppID=$(az iot central app show -n $iotCentralName -g $rgName --query  applicationId --output tsv)
     smartKneeBraceDevices=$(az deployment group show -n $deploymentName -g $rgName --query properties.outputs.smartKneeBraceDeviceNumber.value --output tsv)
@@ -88,6 +92,25 @@ function configure_ADX_cluster() {
         --event-hub-resource-id $eventHubResourceId --managed-identity-resource-id $adxResoureId \
         --data-format 'JSON' --table-name 'TelemetryRaw' --mapping-rule-name 'TelemetryRaw_mapping' \
         --compression 'None' --resource-group $rgName --only-show-errors --output none
+
+    az kusto data-connection event-grid create --cluster-name $adxName -g $rgName --database-name "PatientMonitoring" \
+        --table-name "KneeBrace" --name "KneeBraceLoad" --ignore-first-record true --data-format csv  \
+        --mapping-rule-name "KneeBrace_mapping" --storage-account-resource-id $saId \
+        --consumer-group '$Default' --event-hub-resource-id $eventHubKneeBraceId
+    az kusto data-connection event-grid create --cluster-name $adxName -g $rgName --database-name "PatientMonitoring" \
+        --table-name "VirtualPatch" --name "VirtualPatchLoad" --ignore-first-record true --data-format csv  \
+        --mapping-rule-name "VirtualPatch_mapping" --storage-account-resource-id $saId \
+        --consumer-group '$Default' --event-hub-resource-id $eventHubVirtualPatchId
+    az kusto data-connection event-grid create --cluster-name $adxName -g $rgName --database-name "PatientMonitoring" \
+        --table-name "VirtualPatchFall" --name "VirtualPatchFallLoad" --ignore-first-record true --data-format csv  \
+        --mapping-rule-name "VirtualPatchFall_mapping" --storage-account-resource-id $saId \
+        --consumer-group '$Default' --event-hub-resource-id $eventHubVirtualPatchFallId
+    az storage blob upload -f config/KneeBraceJan.csv -c adxscript -n KneeBraceJan.csv \
+        --account-key $saKey --account-name $saName --only-show-errors --output none  ;\
+    az storage blob upload -f config/VirtualPatchJan.csv -c adxscript -n VirtualPatchJan.csv \
+        --account-key $saKey --account-name $saName --only-show-errors --output none  ;\
+    az storage blob upload -f config/VirtualPatchFallJan.csv -c adxscript -n VirtualPatchFallJan.csv \
+        --account-key $saKey --account-name $saName --only-show-errors --output none  ;\
 }
 
 function create_digital_twin_models() {

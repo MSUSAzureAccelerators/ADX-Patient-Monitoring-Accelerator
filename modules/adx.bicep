@@ -21,7 +21,7 @@ resource adxDb 'Microsoft.Kusto/clusters/databases@2021-08-27' = {
   location: location
   parent:adxCluster
   properties: {
-    softDeletePeriod: 'P3D'
+    softDeletePeriod: 'P60D'
     hotCachePeriod: 'P365D'
   }
 }

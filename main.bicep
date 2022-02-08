@@ -10,14 +10,6 @@ param smartKneeBraceDevices int
 param vitalPatchDevices int
 param principalId string
 
-module storageAccount './modules/storage.bicep' = {
-  name: '${saName}${deploymentSuffix}'
-  params: {
-   saname: '${saName}${deploymentSuffix}'
-   location: deploymentLocation
-  }
-}
-
 module iotCentralApp './modules/iotcentral.bicep' = {
   name: iotCentralName
   params: {
@@ -42,6 +34,15 @@ module eventhub './modules/eventhub.bicep' = {
     eventHubName: '${eventHubName}${deploymentSuffix}'
     location: deploymentLocation
     eventHubSKU: 'Standard'
+  }
+}
+
+module storageAccount './modules/storage.bicep' = {
+  name: '${saName}${deploymentSuffix}'
+  params: {
+   saname: '${saName}${deploymentSuffix}'
+   location: deploymentLocation
+   eventHubId: '${eventhub.outputs.eventhubClusterId}'
   }
 }
 
@@ -88,6 +89,7 @@ output eventhubNamespace string = eventhub.outputs.eventhubNamespace
 output digitalTwinName string = digitalTwin.outputs.digitalTwinName
 output digitalTwinHostName string = digitalTwin.outputs.digitalTwinHostName
 output saName string = storageAccount.outputs.saName
+output saId string = storageAccount.outputs.saId
 output adxName string = adxCluster.outputs.adxName
 output adxClusterId string = adxCluster.outputs.adxClusterId
 output location string = deploymentLocation
