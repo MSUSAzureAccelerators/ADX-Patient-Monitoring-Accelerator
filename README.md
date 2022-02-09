@@ -40,6 +40,10 @@ On the [Azure Cloud Shell](https://shell.azure.com/) run the following commands 
 
 5. Finally, download the [Power BI report](/assets/Connected_Devices.pbix), update the data source to point to yoir newly deployed Azure Data Explorer database, and refresh the data in the report.
 
+## Exploring the data
+
+- If you wish to take a deeper look at the data feel free to explore using KQL. Here is some sample queries to get you started! [KQL Sample](kqlsample/Sample.kql)
+
 ## Files used in the solution
 
 - **asssets folder**: contains the following files:
