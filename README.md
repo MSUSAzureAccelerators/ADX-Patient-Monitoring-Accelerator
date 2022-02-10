@@ -28,7 +28,7 @@ On the [Azure Cloud Shell](https://shell.azure.com/) run the following commands 
 
 3. Get the latest version of the repository
     ```bash
-    git clone -b refactor-to-modules https://github.com/<<<FINALREPO>>>/PatientMonitoringDemo.git
+    git clone https://github.com/bwatts64/PatientMonitoringDemo
     ```
     Optionally, You can update the patientmonitoring.parameters.json file to personalize your deployment.
 
