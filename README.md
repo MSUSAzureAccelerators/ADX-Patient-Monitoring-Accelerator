@@ -1,4 +1,6 @@
-# ADX Connected Devices - Patient Monitoring Demo
+![MSUS Solution Accelerator](./images/MSUS%20Solution%20Accelerator%20Banner%20Two_981.jpg)
+
+# ADX Connected Devices - Patient Monitoring Solution Accelerator
 
 ![alt tag](./assets/AutomationPresentation.gif)
 
