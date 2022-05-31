@@ -1,4 +1,4 @@
-![MSUS Solution Accelerator](./images/MSUS%20Solution%20Accelerator%20Banner%20Two_981.jpg)
+![MSUS Solution Accelerator](./images/MSUS%20Solution%20Accelerator%20Banner%20Two_981.png)
 
 # ADX Connected Devices - Patient Monitoring Solution Accelerator
 
@@ -13,7 +13,6 @@ An [Azure Digital Twins](https://azure.microsoft.com/en-us/services/digital-twin
 The Azure Data Explorer cluster is configured with a database, a set of tables to store telemetry data from both devices, and a set of functions to parse incoming data and to query data directly from the Azure Digital Twins service.
 
 The solution includes a [Power BI](https://powerbi.microsoft.com/en-us/) report to visualize the data. Just download the [file](/assets/Connected_Devices.pbix) and open it in Power BI.  
-
 
 ## Deployment instructions
 
