@@ -29,13 +29,13 @@ On the [Azure Cloud Shell](https://shell.azure.com/) run the following commands 
 
 3. Get the latest version of the repository
     ```bash
-    git clone https://github.com/bwatts64/PatientMonitoringDemo
+    git clone https://github.com/MSUSSolutionAccelerators/ADX-Patient-Monitoring-Solution-Accelerator.git
     ```
     Optionally, You can update the patientmonitoring.parameters.json file to personalize your deployment.
 
 4. Deploy solution
     ```bash
-    cd PatientMonitoringDemo
+    cd ADX-Patient-Monitoring-Solution-Accelerator
     . ./deploy.sh
     ```
 
