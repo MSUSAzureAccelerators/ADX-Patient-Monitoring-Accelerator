@@ -183,7 +183,7 @@ currentDate=$(date)
 tomorrow=$(date +"%Y-%m-%dT00:00:00Z" -d "$currentDate +1 days")
 deploymentName=ADXConnectedDevicesDeployment$randomNum
 rgName=ADXConnectedDevices$randomNum
-principalId=$(az ad signed-in-user show --query Id -o tsv)
+principalId=$(az ad signed-in-user show --query id -o tsv)
 
 # Setup array to utilize when assiging devices to departments and patients
 departments=('Rehabilitation' 'Psychology')
