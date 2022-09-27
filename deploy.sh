@@ -183,12 +183,19 @@ currentDate=$(date)
 tomorrow=$(date +"%Y-%m-%dT00:00:00Z" -d "$currentDate +1 days")
 deploymentName=ADXConnectedDevicesDeployment$randomNum
 rgName=ADXConnectedDevices$randomNum
-principalId=$(az ad signed-in-user show --query id -o tsv)
+
 
 # Setup array to utilize when assiging devices to departments and patients
 departments=('Rehabilitation' 'Psychology')
 rehapPatients=('Patient1' 'Patient2' 'Patient3')
 psychPatients=('Patient4' 'Patient5' 'Patient6')
+
+clear
+echo "Please enter the User Principal Name of the logged-in user"
+echo "     example: john.doe@microsoft.com"
+read -p "Enter UPN:" userName
+clear
+
 
 banner # Show Welcome banner
 
@@ -208,6 +215,8 @@ configure_ADX_cluster & # Configure ADX cluster
 spinner "Configuring ADX Cluster"
 # Get/Refresh IoT Central Token 
 az account get-access-token --resource https://apps.azureiotcentral.com --only-show-errors --output none
+
+az role assignment create --scope $adtID --role 'bcd981a7-7f74-457b-83e1-cceb9e632ffe' --assignee $userName --output none
 create_digital_twin_models & # Create all the models from folder in git repo
 spinner "Creating model for Azure Digital Twins $dtName"
 

@@ -15,7 +15,6 @@ module iotCentralApp './modules/iotcentral.bicep' = {
   params: {
     iotCentralName: '${iotCentralName}${deploymentSuffix}'
     location: deploymentLocation
-    principalId: principalId
   }
 }
 
@@ -51,7 +50,6 @@ module digitalTwin './modules/digitaltwin.bicep' = {
   params: {
     digitalTwinName: '${digitalTwinlName}${deploymentSuffix}'
     location: deploymentLocation
-    principalId: principalId
   }
 }
 
