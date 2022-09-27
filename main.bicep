@@ -86,6 +86,7 @@ output eventhubClusterId string = eventhub.outputs.eventhubClusterId
 output eventhubNamespace string = eventhub.outputs.eventhubNamespace
 output digitalTwinName string = digitalTwin.outputs.digitalTwinName
 output digitalTwinHostName string = digitalTwin.outputs.digitalTwinHostName
+output digitalTwinId string = digitalTwin.outputs.digitalTwinId
 output saName string = storageAccount.outputs.saName
 output saId string = storageAccount.outputs.saId
 output adxName string = adxCluster.outputs.adxName

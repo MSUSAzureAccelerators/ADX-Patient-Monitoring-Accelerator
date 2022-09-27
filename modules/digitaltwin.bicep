@@ -14,3 +14,4 @@ resource digitaltwin 'Microsoft.DigitalTwins/digitalTwinsInstances@2020-12-01' =
 
 output digitalTwinName string = digitaltwin.name
 output digitalTwinHostName string = digitaltwin.properties.hostName
+output digitalTwinId string = digitaltwin.id
