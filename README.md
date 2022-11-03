@@ -1,22 +1,22 @@
 ![MSUS Solution Accelerator](./images/MSUS%20Solution%20Accelerator%20Banner%20Two_981.png)
 
-# ADX Connected Devices - Patient Monitoring Solution Accelerator
+# ADX Connected Devices - Patient Monitoring Accelerator
 
 ![alt tag](./assets/AutomationPresentation.gif)
 
 This example shows how to use ADX to monitor a patient's vitals and knee brace readings. It leverages (Azure Bicep)[https://docs.microsoft.com/EN-US/azure/azure-resource-manager/bicep/] and the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) to automate the entire deployment.
 
-The solution uses [Azure IoT Central](https://azure.microsoft.com/en-us/services/iot-central/) Continuous Patient Monitoring [application](https://docs.microsoft.com/en-us/azure/iot-central/core/concepts-app-templates#continuous-patient-monitoring) to generate telemetry readings for two IoT Consumer devices: automated knee brace and a vitals monitor patch. The generated data is automatically send to an [Azure Event Hub](https://azure.microsoft.com/en-us/services/event-hubs/) and then send to an [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) for analysis.
+The accelerator uses [Azure IoT Central](https://azure.microsoft.com/en-us/services/iot-central/) Continuous Patient Monitoring [application](https://docs.microsoft.com/en-us/azure/iot-central/core/concepts-app-templates#continuous-patient-monitoring) to generate telemetry readings for two IoT Consumer devices: automated knee brace and a vitals monitor patch. The generated data is automatically send to an [Azure Event Hub](https://azure.microsoft.com/en-us/services/event-hubs/) and then send to an [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) for analysis.
 
 An [Azure Digital Twins](https://azure.microsoft.com/en-us/services/digital-twins/) service is used to store additional simulated devices metadata.
 
 The Azure Data Explorer cluster is configured with a database, a set of tables to store telemetry data from both devices, and a set of functions to parse incoming data and to query data directly from the Azure Digital Twins service.
 
-The solution includes a [Power BI](https://powerbi.microsoft.com/en-us/) report to visualize the data. Just download the [file](/assets/Connected_Devices.pbix) and open it in Power BI.  
+The accelerator includes a [Power BI](https://powerbi.microsoft.com/en-us/) report to visualize the data. Just download the [file](/assets/Connected_Devices.pbix) and open it in Power BI.  
 
 ## Deployment instructions
 
-On the [Azure Cloud Shell](https://shell.azure.com/) run the following commands to deploy the solution:
+On the [Azure Cloud Shell](https://shell.azure.com/) run the following commands to deploy the accelerator:
 1. Login to Azure
     ```bash
     az login
@@ -39,11 +39,11 @@ On the [Azure Cloud Shell](https://shell.azure.com/) run the following commands 
     . ./deploy.sh
     ```
 
-5. Finally, download the [Power BI report](/assets/Connected_Devices.pbix), update the data source to point to yoir newly deployed Azure Data Explorer database, and refresh the data in the report.
+5. Finally, download the [Power BI report](/assets/Connected_Devices.pbix), update the data source to point to your newly deployed Azure Data Explorer database, and refresh the data in the report.
 
 ## Exploring the data
 
-- If you wish to take a deeper look at the data feel free to explore using KQL. Here is some sample queries to get you started! [KQL Sample](kqlsample/Sample.kql)
+- If you wish to take a deeper look at the data feel free to explore using KQL. Here are some sample queries to get you started! [KQL Sample](kqlsample/Sample.kql)
 
 ## Files used in the solution
 
@@ -66,7 +66,7 @@ On the [Azure Cloud Shell](https://shell.azure.com/) run the following commands 
   - iotcentral.bicep: IoT Central Bicep deployment file
   - storage.bicep: Storage Bicep deployment file. This account is used as temporary storage to download ADX database configuration scripts)
 
-- deploy.sh: script to deploy the solution. THe only one you need to run 
+- deploy.sh: script to deploy the solution. The only one you need to run 
 - main.bicep: main Bicep deployment file. It includes all the other Bicep deployment files (modules)
 - patientmonitoring.parameters.json: parameters file used to customize the deployment
 - README.md: This README file
