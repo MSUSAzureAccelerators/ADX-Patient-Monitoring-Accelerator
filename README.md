@@ -1,10 +1,10 @@
 ![MSUS Solution Accelerator](./images/MSUS%20Solution%20Accelerator%20Banner%20Two_981.png)
 
-# ADX Connected Devices - Patient Monitoring Accelerator
+# ADX Patient Monitoring Accelerator
 
 ![alt tag](./assets/AutomationPresentation.gif)
 
-This example shows how to use ADX to monitor a patient's vitals and knee brace readings. It leverages (Azure Bicep)[https://docs.microsoft.com/EN-US/azure/azure-resource-manager/bicep/] and the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) to automate the entire deployment.
+This example shows how to use ADX connected devices to monitor a patient's vitals and knee brace readings. It leverages (Azure Bicep)[https://docs.microsoft.com/EN-US/azure/azure-resource-manager/bicep/] and the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) to automate the entire deployment.
 
 The accelerator uses [Azure IoT Central](https://azure.microsoft.com/en-us/services/iot-central/) Continuous Patient Monitoring [application](https://docs.microsoft.com/en-us/azure/iot-central/core/concepts-app-templates#continuous-patient-monitoring) to generate telemetry readings for two IoT Consumer devices: automated knee brace and a vitals monitor patch. The generated data is automatically send to an [Azure Event Hub](https://azure.microsoft.com/en-us/services/event-hubs/) and then send to an [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) for analysis.
 
