@@ -43,7 +43,7 @@ On the [Azure Cloud Shell](https://shell.azure.com/) run the following commands 
 
 ## Exploring the data
 
-- If you wish to take a deeper look at the data feel free to explore using KQL. Here are some sample queries to get you started! [KQL Sample](kqlsample/Sample.kql)
+If you wish to take a deeper look at the data feel free to explore using KQL. Here are some sample queries to get you started! [KQL Sample](kqlsample/Sample.kql)
 
 ## Files used in the solution
 
